@@ -9,7 +9,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddSession();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    DbInitializer.Seed(context);
+}
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -22,6 +31,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(); // ✅ forma correta no .NET 8
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

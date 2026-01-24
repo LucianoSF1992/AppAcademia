@@ -1,0 +1,23 @@
+using AppAcademia.Models;
+
+namespace AppAcademia.Data;
+
+public static class DbInitializer
+{
+    public static void Seed(AppDbContext context)
+    {
+        if (context.Usuarios.Any())
+            return;
+
+        var admin = new Usuario
+        {
+            Nome = "Administrador",
+            Email = "administratorappacademia@academia.com",
+            Senha = "admin",
+            Perfil = "Admin"
+        };
+
+        context.Usuarios.Add(admin);
+        context.SaveChanges();
+    }
+}
