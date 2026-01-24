@@ -30,8 +30,54 @@
 
                     <!-- Menu esquerdo (exemplo futuro) -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        @* Menus podem ser adicionados aqui futuramente *@
+
+                        @if (Context.Session.GetString("Perfil") == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Index">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Instrutor" asp-action="Index">
+                                    Instrutores
+                                </a>
+                            </li>
+                        }
+
+                        @if (Context.Session.GetString("Perfil") == "Instrutor")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Instrutor" asp-action="Index">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Aluno" asp-action="Index">
+                                    Alunos
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Treino" asp-action="Index">
+                                    Treinos
+                                </a>
+                            </li>
+                        }
+
+                        @if (Context.Session.GetString("Perfil") == "Aluno")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Aluno" asp-action="Index">
+                                    Meu Treino
+                                </a>
+                            </li>
+                        }
+
                     </ul>
+
 
                     <!-- Usuário logado -->
                     @if (Context.Session.GetString("Nome") != null)
