@@ -12,6 +12,7 @@ public class AuthController : Controller
         _context = context;
     }
 
+    [HttpGet]
     public IActionResult Login()
     {
         return View();

@@ -1,5 +1,8 @@
 using AppAcademia.Data;
 using Microsoft.EntityFrameworkCore;
+using AppAcademia.Filters;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSession();
+
+builder.Services.AddScoped<AuthFilter>();
 
 var app = builder.Build();
 
@@ -38,6 +43,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
+
 
 app.Run();
