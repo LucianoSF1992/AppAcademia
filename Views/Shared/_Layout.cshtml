@@ -18,9 +18,30 @@
             <div class="container-fluid">
 
                 <!-- Logo / Nome do sistema -->
-                <a class="navbar-brand" asp-controller="Auth" asp-action="Login">
-                    AppAcademia
-                </a>
+                @if (Context.Session.GetString("Perfil") == "Admin")
+                {
+                    <a class="navbar-brand" asp-controller="Admin" asp-action="Index">
+                        AppAcademia
+                    </a>
+                }
+                else if (Context.Session.GetString("Perfil") == "Instrutor")
+                {
+                    <a class="navbar-brand" asp-controller="Instrutor" asp-action="Index">
+                        AppAcademia
+                    </a>
+                }
+                else if (Context.Session.GetString("Perfil") == "Aluno")
+                {
+                    <a class="navbar-brand" asp-controller="Aluno" asp-action="Index">
+                        AppAcademia
+                    </a>
+                }
+                else
+                {
+                    <a class="navbar-brand" asp-controller="Auth" asp-action="Login">
+                        AppAcademia
+                    </a>
+                }
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                     <span class="navbar-toggler-icon"></span>
@@ -40,7 +61,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Instrutor" asp-action="Index">
+                                <a asp-controller="InstrutorAdmin" asp-action="Index">
                                     Instrutores
                                 </a>
                             </li>

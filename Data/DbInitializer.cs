@@ -6,18 +6,25 @@ public static class DbInitializer
 {
     public static void Seed(AppDbContext context)
     {
-        if (context.Usuarios.Any())
-            return;
-
-        var admin = new Usuario
+        try
         {
-            Nome = "Administrador",
-            Email = "administratorappacademia@academia.com",
-            Senha = "admin",
-            Perfil = "Admin"
-        };
+            if (context.Usuarios.Any())
+                return;
 
-        context.Usuarios.Add(admin);
-        context.SaveChanges();
+            var admin = new Usuario
+            {
+                Nome = "Administrador",
+                Email = "administratorappacademia@academia.com",
+                Senha = "admin",
+                Perfil = "Admin"
+            };
+
+            context.Usuarios.Add(admin);
+            context.SaveChanges();
+        }
+        catch
+        {
+            // evita quebrar a aplicação se o banco estiver indisponível
+        }
     }
 }
