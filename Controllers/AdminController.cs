@@ -3,7 +3,7 @@ using AppAcademia.Filters;
 
 namespace AppAcademia.Controllers;
 
-[ServiceFilter(typeof(AuthFilter))]
+[ServiceFilter(typeof(AdminOnlyAttribute))]
 public class AdminController : Controller
 {
     public IActionResult Index()

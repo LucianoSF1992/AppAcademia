@@ -16,6 +16,10 @@ builder.Services.AddSession();
 
 builder.Services.AddScoped<AuthFilter>();
 
+builder.Services.AddScoped<AdminOnlyAttribute>();
+builder.Services.AddScoped<InstrutorOnlyAttribute>();
+builder.Services.AddScoped<AlunoOnlyAttribute>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

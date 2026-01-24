@@ -3,7 +3,7 @@ using AppAcademia.Filters;
 
 namespace AppAcademia.Controllers;
 
-[ServiceFilter(typeof(AuthFilter))]
+[ServiceFilter(typeof(AlunoOnlyAttribute))]
 public class AlunoController : Controller
 {
     public IActionResult Index()
