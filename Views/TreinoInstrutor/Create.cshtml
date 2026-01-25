@@ -1,0 +1,39 @@
+@model AppAcademia.ViewModels.TreinoViewModel
+
+<h2>Novo Treino</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="AlunoId" />
+
+    <div class="mb-3">
+        <label>Dia da Semana</label>
+        <select asp-for="DiaSemana" class="form-control">
+            <option>Segunda</option>
+            <option>Terça</option>
+            <option>Quarta</option>
+            <option>Quinta</option>
+            <option>Sexta</option>
+            <option>Sábado</option>
+            <option>Domingo</option>
+        </select>
+    </div>
+
+    <hr />
+
+    <h5>Exercícios</h5>
+
+    @for (int i = 0; i < Model.Exercicios.Count; i++)
+    {
+        <div class="border p-3 mb-3">
+            <input asp-for="Exercicios[i].Nome" placeholder="Exercício" class="form-control mb-2" />
+            <input asp-for="Exercicios[i].GrupoMuscular" placeholder="Grupo Muscular" class="form-control mb-2" />
+            <input asp-for="Exercicios[i].Series" placeholder="Séries" class="form-control mb-2" />
+            <input asp-for="Exercicios[i].Repeticoes" placeholder="Repetições" class="form-control mb-2" />
+            <input asp-for="Exercicios[i].Descanso" placeholder="Descanso (segundos)" class="form-control mb-2" />
+            <textarea asp-for="Exercicios[i].Observacoes" placeholder="Observações" class="form-control"></textarea>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Salvar Treino</button>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</form>

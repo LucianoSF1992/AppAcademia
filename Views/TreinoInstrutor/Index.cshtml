@@ -1,0 +1,27 @@
+@model List<AppAcademia.Models.Aluno>
+
+<h2>Treinos</h2>
+
+<p>Selecione um aluno para montar o treino:</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Aluno</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var aluno in Model)
+        {
+            <tr>
+                <td>@aluno.Usuario?.Nome</td>
+                <td>
+                    <a asp-action="Create" asp-route-alunoId="@aluno.Id" class="btn btn-success btn-sm">
+                        Montar Treino
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
