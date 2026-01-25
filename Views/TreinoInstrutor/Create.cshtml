@@ -22,18 +22,80 @@
 
     <h5>Exercícios</h5>
 
-    @for (int i = 0; i < Model.Exercicios.Count; i++)
-    {
-        <div class="border p-3 mb-3">
-            <input asp-for="Exercicios[i].Nome" placeholder="Exercício" class="form-control mb-2" />
-            <input asp-for="Exercicios[i].GrupoMuscular" placeholder="Grupo Muscular" class="form-control mb-2" />
-            <input asp-for="Exercicios[i].Series" placeholder="Séries" class="form-control mb-2" />
-            <input asp-for="Exercicios[i].Repeticoes" placeholder="Repetições" class="form-control mb-2" />
-            <input asp-for="Exercicios[i].Descanso" placeholder="Descanso (segundos)" class="form-control mb-2" />
-            <textarea asp-for="Exercicios[i].Observacoes" placeholder="Observações" class="form-control"></textarea>
-        </div>
-    }
+    <div id="exercicios-container"></div>
 
-    <button type="submit" class="btn btn-primary">Salvar Treino</button>
-    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    <button type="button" class="btn btn-outline-primary mb-3" onclick="adicionarExercicio()">
+        ➕ Adicionar Exercício
+    </button>
+
+    <br />
+
+    <button type="submit" class="btn btn-success">
+        Salvar Treino
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Voltar
+    </a>
 </form>
+
+@section Scripts {
+    <script>
+        let index = 0;
+
+        function adicionarExercicio() {
+            const container = document.getElementById('exercicios-container');
+
+            const html = `
+            <div class="card mb-3" id="exercicio-${index}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6>Exercício ${index + 1}</h6>
+                        <button type="button"
+                                class="btn btn-sm btn-danger"
+                                onclick="removerExercicio(${index})">
+                            ❌
+                        </button>
+                    </div>
+
+                    <input name="Exercicios[${index}].Nome"
+                           class="form-control mb-2"
+                           placeholder="Nome do exercício" required />
+
+                    <input name="Exercicios[${index}].GrupoMuscular"
+                           class="form-control mb-2"
+                           placeholder="Grupo muscular" required />
+
+                    <input name="Exercicios[${index}].Series"
+                           type="number"
+                           class="form-control mb-2"
+                           placeholder="Séries" required />
+
+                    <input name="Exercicios[${index}].Repeticoes"
+                           type="number"
+                           class="form-control mb-2"
+                           placeholder="Repetições" required />
+
+                    <input name="Exercicios[${index}].Descanso"
+                           type="number"
+                           class="form-control mb-2"
+                           placeholder="Descanso (segundos)" required />
+
+                    <textarea name="Exercicios[${index}].Observacoes"
+                              class="form-control"
+                              placeholder="Observações (opcional)">
+                    </textarea>
+                </div>
+            </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+            index++;
+        }
+
+        function removerExercicio(id) {
+            const el = document.getElementById(`exercicio-${id}`);
+            if (el) el.remove();
+        }
+    </script>
+}
