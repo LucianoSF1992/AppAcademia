@@ -1,0 +1,35 @@
+@model AppAcademia.ViewModels.AlunoViewModel
+
+<h2>Editar Aluno</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label>Nome</label>
+        <input asp-for="Nome" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>E-mail</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Nova Senha (opcional)</label>
+        <input asp-for="Senha" type="password" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Idade</label>
+        <input asp-for="Idade" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Objetivo</label>
+        <input asp-for="Objetivo" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary">Atualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</form>
