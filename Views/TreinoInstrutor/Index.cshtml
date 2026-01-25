@@ -18,9 +18,14 @@
                 <td>@aluno.Usuario?.Nome</td>
                 <td>
                     <a asp-action="Create" asp-route-alunoId="@aluno.Id" class="btn btn-success btn-sm">
-                        Montar Treino
+                        Novo Treino
+                    </a>
+
+                    <a asp-action="Detalhes" asp-route-alunoId="@aluno.Id" class="btn btn-primary btn-sm">
+                        Ver Treinos
                     </a>
                 </td>
+
             </tr>
         }
     </tbody>

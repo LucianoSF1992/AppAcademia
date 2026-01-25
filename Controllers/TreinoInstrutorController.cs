@@ -74,4 +74,17 @@ public class TreinoInstrutorController : Controller
 
         return RedirectToAction("Index");
     }
+    public IActionResult Detalhes(int alunoId)
+    {
+        var treinos = _context.Treinos
+            .Include(t => t.Exercicios)
+            .Where(t => t.AlunoId == alunoId)
+            .OrderBy(t => t.DiaSemana)
+            .ToList();
+
+        ViewBag.AlunoId = alunoId;
+
+        return View(treinos);
+    }
+
 }

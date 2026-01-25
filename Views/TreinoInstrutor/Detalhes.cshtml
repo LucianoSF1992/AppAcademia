@@ -1,0 +1,37 @@
+@model List<AppAcademia.Models.Treino>
+
+<h2>Treinos do Aluno</h2>
+
+<a asp-action="Index" class="btn btn-secondary mb-3">
+    Voltar
+</a>
+
+@foreach (var treino in Model)
+{
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <strong>@treino.DiaSemana</strong>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                @foreach (var ex in treino.Exercicios)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="border p-3 h-100">
+                            <h5>@ex.Nome</h5>
+                            <p><strong>Grupo:</strong> @ex.GrupoMuscular</p>
+                            <p>@ex.Series x @ex.Repeticoes</p>
+                            <p>Descanso: @ex.Descanso s</p>
+
+                            @if (!string.IsNullOrEmpty(ex.Observacoes))
+                            {
+                                <p class="text-muted">@ex.Observacoes</p>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
