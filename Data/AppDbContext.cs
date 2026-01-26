@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<Aluno> Alunos { get; set; }
     public DbSet<Treino> Treinos { get; set; }
     public DbSet<Exercicio> Exercicios { get; set; }
+    public DbSet<ExercicioConcluido> ExerciciosConcluidos { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
