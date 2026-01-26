@@ -64,7 +64,7 @@ public class TreinoInstrutorController : Controller
                 Series = ex.Series,
                 Repeticoes = ex.Repeticoes,
                 Descanso = ex.Descanso,
-                Observacoes = ex.Observacoes
+                Observacoes = ex.Observacoes ?? ""
             };
 
             _context.Exercicios.Add(exercicio);
@@ -87,4 +87,41 @@ public class TreinoInstrutorController : Controller
         return View(treinos);
     }
 
+    public IActionResult Delete(int id)
+    {
+        var instrutorId = _context.Instrutores
+            .Where(i => i.UsuarioId == HttpContext.Session.GetInt32("UsuarioId"))
+            .Select(i => i.Id)
+            .First();
+
+        var treino = _context.Treinos
+            .Include(t => t.Exercicios)
+            .Include(t => t.Aluno)
+            .FirstOrDefault(t => t.Id == id);
+
+        if (treino == null)
+            return NotFound();
+
+        // 🔒 Segurança: só exclui se o treino for do instrutor logado
+        if (treino.Aluno!.InstrutorId != instrutorId)
+            return Forbid();
+
+        // 1️⃣ Remove exercícios concluídos relacionados
+        var exerciciosIds = treino.Exercicios.Select(e => e.Id).ToList();
+
+        var concluidos = _context.ExerciciosConcluidos
+            .Where(c => exerciciosIds.Contains(c.ExercicioId));
+
+        _context.ExerciciosConcluidos.RemoveRange(concluidos);
+
+        // 2️⃣ Remove exercícios
+        _context.Exercicios.RemoveRange(treino.Exercicios);
+
+        // 3️⃣ Remove o treino
+        _context.Treinos.Remove(treino);
+
+        _context.SaveChanges();
+
+        return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
+    }
 }
