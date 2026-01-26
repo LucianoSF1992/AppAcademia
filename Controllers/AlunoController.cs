@@ -2,6 +2,7 @@ using AppAcademia.Data;
 using AppAcademia.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AppAcademia.ViewModels;
 
 namespace AppAcademia.Controllers;
 
@@ -95,6 +96,40 @@ public class AlunoController : Controller
         ViewBag.ConcluidosSemana = concluidosSemana;
 
         return View(treinos);
+    }
+
+    public IActionResult Desempenho()
+    {
+        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+        var alunoId = _context.Alunos
+            .Where(a => a.UsuarioId == usuarioId)
+            .Select(a => a.Id)
+            .First();
+
+        var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+
+        var dias = new[] { "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo" };
+
+        var dados = new DesempenhoSemanalViewModel();
+
+        foreach (var dia in dias)
+        {
+            var dataDia = inicioSemana.AddDays(Array.IndexOf(dias, dia));
+
+            var total = _context.ExerciciosConcluidos
+                .Include(c => c.Exercicio)
+                .ThenInclude(e => e!.Treino)
+                .Count(c =>
+                    c.Data.Date == dataDia.Date &&
+                    c.Exercicio!.Treino!.AlunoId == alunoId
+                );
+
+            dados.Dias.Add(dia);
+            dados.Quantidades.Add(total);
+        }
+
+        return View(dados);
     }
 
 }
