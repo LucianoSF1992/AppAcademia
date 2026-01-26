@@ -8,4 +8,7 @@ public class Treino
 
     public string DiaSemana { get; set; } = string.Empty;
     public List<Exercicio> Exercicios { get; set; } = new();
+
+    public bool Ativo { get; set; } = true;
+
 }

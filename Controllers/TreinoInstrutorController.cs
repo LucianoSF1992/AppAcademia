@@ -76,16 +76,31 @@ public class TreinoInstrutorController : Controller
     }
     public IActionResult Detalhes(int alunoId)
     {
+        var aluno = _context.Alunos
+            .Include(a => a.Usuario)
+            .FirstOrDefault(a => a.Id == alunoId);
+
+        if (aluno == null)
+            return NotFound();
+
         var treinos = _context.Treinos
-            .Include(t => t.Exercicios)
-            .Where(t => t.AlunoId == alunoId)
-            .OrderBy(t => t.DiaSemana)
+            .Where(t => t.AlunoId == alunoId && t.Ativo)
+            .Select(t => new TreinoStatusViewModel
+            {
+                TreinoId = t.Id,
+                DiaSemana = t.DiaSemana,
+                TotalExercicios = t.Exercicios.Count(),
+
+                ExerciciosConcluidos = _context.ExerciciosConcluidos
+                .Count(c => c.Exercicio!.TreinoId == t.Id)
+            })
             .ToList();
 
-        ViewBag.AlunoId = alunoId;
 
+        ViewBag.Aluno = aluno;
         return View(treinos);
     }
+
 
     public IActionResult Delete(int id)
     {

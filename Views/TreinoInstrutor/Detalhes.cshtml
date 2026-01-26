@@ -1,43 +1,65 @@
-@model List<AppAcademia.Models.Treino>
+@model List<AppAcademia.ViewModels.TreinoStatusViewModel>
+
+@{
+    var aluno = ViewBag.Aluno as AppAcademia.Models.Aluno;
+}
 
 <h2>Treinos do Aluno</h2>
 
-<a asp-action="Index" class="btn btn-secondary mb-3">
+@if (aluno != null)
+{
+    <p><strong>Aluno:</strong> @aluno.Usuario?.Nome</p>
+}
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Dia da Semana</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var treino in Model)
+        {
+            <tr>
+                <td>@treino.DiaSemana</td>
+
+                <td>
+                    @if (treino.Concluido)
+                    {
+                        <span class="badge bg-success">Concluído</span>
+                    }
+                    else if (treino.EmAndamento)
+                    {
+                        <span class="badge bg-warning text-dark">Em andamento</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Não iniciado</span>
+                    }
+                </td>
+
+                <td>
+                    <a asp-action="DetalhesTreino" asp-route-id="@treino.TreinoId" class="btn btn-sm btn-primary">
+                        Ver
+                    </a>
+
+                    @* Botões futuros *@
+                    @*
+                    <a asp-action="Edit"
+                       asp-route-id="@treino.TreinoId"
+                       class="btn btn-sm btn-warning">
+                        Editar
+                    </a>
+                    *@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">
     Voltar
 </a>
-
-@foreach (var treino in Model)
-{
-    <div class="card mb-4">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <strong>@treino.DiaSemana</strong>
-
-            <a asp-action="Delete" asp-route-id="@treino.Id" class="btn btn-sm btn-danger"
-                onclick="return confirm('Deseja excluir este treino?')">
-                Excluir
-            </a>
-        </div>
-
-
-        <div class="card-body">
-            <div class="row">
-                @foreach (var ex in treino.Exercicios)
-                {
-                    <div class="col-md-4 mb-3">
-                        <div class="border p-3 h-100">
-                            <h5>@ex.Nome</h5>
-                            <p><strong>Grupo:</strong> @ex.GrupoMuscular</p>
-                            <p>@ex.Series x @ex.Repeticoes</p>
-                            <p>Descanso: @ex.Descanso s</p>
-
-                            @if (!string.IsNullOrEmpty(ex.Observacoes))
-                            {
-                                <p class="text-muted">@ex.Observacoes</p>
-                            }
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-}
