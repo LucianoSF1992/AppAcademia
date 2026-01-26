@@ -135,5 +135,42 @@ public class TreinoInstrutorController : Controller
 
         return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
     }
+    private bool TreinoJaIniciado(int treinoId)
+    {
+        return _context.ExerciciosConcluidos
+            .Any(c => c.Exercicio!.TreinoId == treinoId);
+    }
 
+    public IActionResult Editar(int id)
+    {
+        var treino = _context.Treinos
+            .Include(t => t.Exercicios)
+            .FirstOrDefault(t => t.Id == id);
+
+        if (treino == null)
+            return NotFound();
+
+        if (TreinoJaIniciado(treino.Id))
+        {
+            TempData["Erro"] = "Este treino já foi iniciado e não pode ser editado.";
+            return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
+        }
+
+        return View(treino);
+    }
+
+    [HttpPost]
+    public IActionResult Editar(Treino treino)
+    {
+        if (TreinoJaIniciado(treino.Id))
+        {
+            TempData["Erro"] = "Este treino já foi iniciado e não pode ser editado.";
+            return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
+        }
+
+        _context.Treinos.Update(treino);
+        _context.SaveChanges();
+
+        return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
+    }
 }

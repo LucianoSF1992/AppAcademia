@@ -1,0 +1,67 @@
+@model AppAcademia.Models.Treino
+
+@{
+    ViewData["Title"] = "Editar Treino";
+}
+
+<h2>Editar Treino</h2>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="AlunoId" />
+
+    <div class="mb-3">
+        <label class="form-label">Dia da Semana</label>
+        <select asp-for="DiaSemana" class="form-select">
+            <option>Segunda</option>
+            <option>Terça</option>
+            <option>Quarta</option>
+            <option>Quinta</option>
+            <option>Sexta</option>
+            <option>Sábado</option>
+            <option>Domingo</option>
+        </select>
+    </div>
+
+    <hr />
+    <h5>Exercícios</h5>
+
+    @for (int i = 0; i < Model.Exercicios.Count; i++)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <input type="hidden" asp-for="Exercicios[i].Id" />
+
+                <div class="mb-2">
+                    <label>Nome</label>
+                    <input asp-for="Exercicios[i].Nome" class="form-control" />
+                </div>
+
+                <div class="mb-2">
+                    <label>Grupo Muscular</label>
+                    <input asp-for="Exercicios[i].GrupoMuscular" class="form-control" />
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Séries</label>
+                        <input asp-for="Exercicios[i].Series" class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label>Repetições</label>
+                        <input asp-for="Exercicios[i].Repeticoes" class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label>Descanso</label>
+                        <input asp-for="Exercicios[i].Descanso" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+    <a asp-action="Detalhes" asp-route-alunoId="@Model.AlunoId" class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>

@@ -8,10 +8,11 @@
 
 @if (TempData["Erro"] != null)
 {
-    <div class="alert alert-warning">
+    <div class="alert alert-danger">
         @TempData["Erro"]
     </div>
 }
+
 
 
 <table class="table table-striped mt-3">
@@ -48,6 +49,13 @@
                     <a asp-action="DetalhesTreino" asp-route-id="@treino.TreinoId" class="btn btn-sm btn-primary">
                         Ver
                     </a>
+
+                    @if (!treino.Concluido && !treino.EmAndamento)
+                    {
+                        <a asp-action="Editar" asp-route-id="@treino.TreinoId" class="btn btn-sm btn-warning">
+                            Editar
+                        </a>
+                    }
 
                     @if (treino.PodeExcluir)
                     {
