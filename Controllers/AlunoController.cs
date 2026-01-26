@@ -70,4 +70,31 @@ public class AlunoController : Controller
 
         return Ok();
     }
+
+    public IActionResult Historico()
+    {
+        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+        var alunoId = _context.Alunos
+            .Where(a => a.UsuarioId == usuarioId)
+            .Select(a => a.Id)
+            .First();
+
+        var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+        var fimSemana = inicioSemana.AddDays(6);
+
+        var treinos = _context.Treinos
+            .Include(t => t.Exercicios)
+            .Where(t => t.AlunoId == alunoId)
+            .ToList();
+
+        var concluidosSemana = _context.ExerciciosConcluidos
+            .Where(c => c.Data.Date >= inicioSemana && c.Data.Date <= fimSemana)
+            .ToList();
+
+        ViewBag.ConcluidosSemana = concluidosSemana;
+
+        return View(treinos);
+    }
+
 }

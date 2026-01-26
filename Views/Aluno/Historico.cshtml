@@ -1,0 +1,35 @@
+@model List<AppAcademia.Models.Treino>
+
+@{
+    var concluidos = ViewBag.ConcluidosSemana as List<AppAcademia.Models.ExercicioConcluido>
+    ?? new List<AppAcademia.Models.ExercicioConcluido>();
+}
+
+<h2>📅 Histórico da Semana</h2>
+
+@foreach (var treino in Model)
+{
+    var exercicios = treino.Exercicios;
+    var feitos = exercicios.Count(e => concluidos.Any(c => c.ExercicioId == e.Id));
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>@treino.DiaSemana</strong>
+        </div>
+
+        <div class="card-body">
+            <p>
+                @feitos de @exercicios.Count exercícios concluídos
+            </p>
+
+            @if (feitos == exercicios.Count && exercicios.Count > 0)
+            {
+                <span class="badge bg-success">Treino completo 💪</span>
+            }
+            else
+            {
+                <span class="badge bg-warning text-dark">Pendente</span>
+            }
+        </div>
+    </div>
+}
