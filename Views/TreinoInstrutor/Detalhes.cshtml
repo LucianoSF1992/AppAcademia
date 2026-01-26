@@ -6,10 +6,13 @@
 
 <h2>Treinos do Aluno</h2>
 
-@if (aluno != null)
+@if (TempData["Erro"] != null)
 {
-    <p><strong>Aluno:</strong> @aluno.Usuario?.Nome</p>
+    <div class="alert alert-warning">
+        @TempData["Erro"]
+    </div>
 }
+
 
 <table class="table table-striped mt-3">
     <thead>
@@ -27,11 +30,11 @@
                 <td>@treino.DiaSemana</td>
 
                 <td>
-                    @if (treino.Concluido)
+                    @if (treino.ExerciciosConcluidos == treino.TotalExercicios && treino.TotalExercicios > 0)
                     {
                         <span class="badge bg-success">Concluído</span>
                     }
-                    else if (treino.EmAndamento)
+                    else if (treino.ExerciciosConcluidos > 0)
                     {
                         <span class="badge bg-warning text-dark">Em andamento</span>
                     }
@@ -46,14 +49,13 @@
                         Ver
                     </a>
 
-                    @* Botões futuros *@
-                    @*
-                    <a asp-action="Edit"
-                       asp-route-id="@treino.TreinoId"
-                       class="btn btn-sm btn-warning">
-                        Editar
-                    </a>
-                    *@
+                    @if (treino.PodeExcluir)
+                    {
+                        <a asp-action="Delete" asp-route-id="@treino.TreinoId" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Deseja realmente excluir este treino?')">
+                            Excluir
+                        </a>
+                    }
                 </td>
             </tr>
         }

@@ -1,0 +1,53 @@
+@model AppAcademia.Models.Treino
+
+@{
+    ViewData["Title"] = "Detalhes do Treino";
+}
+
+<h2 class="mb-3">Detalhes do Treino</h2>
+
+<div class="mb-4">
+    <strong>Dia da Semana:</strong> @Model.DiaSemana <br />
+    <strong>Total de Exercícios:</strong> @Model.Exercicios.Count
+</div>
+
+<hr />
+
+@if (!Model.Exercicios.Any())
+{
+    <div class="alert alert-warning">
+        Nenhum exercício cadastrado neste treino.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Exercício</th>
+                <th>Grupo Muscular</th>
+                <th>Séries</th>
+                <th>Repetições</th>
+                <th>Descanso</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ex in Model.Exercicios)
+            {
+                <tr>
+                    <td>@ex.Nome</td>
+                    <td>@ex.GrupoMuscular</td>
+                    <td>@ex.Series</td>
+                    <td>@ex.Repeticoes</td>
+                    <td>@ex.Descanso</td>
+                    <td>@ex.Observacoes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Detalhes" asp-route-alunoId="@Model.AlunoId" class="btn btn-secondary mt-3">
+    Voltar
+</a>

@@ -13,5 +13,6 @@ namespace AppAcademia.ViewModels
             ExerciciosConcluidos > 0 && ExerciciosConcluidos < TotalExercicios;
         public bool Concluido =>
             TotalExercicios > 0 && ExerciciosConcluidos == TotalExercicios;
+        public bool PodeExcluir => ExerciciosConcluidos == 0;
     }
 }
