@@ -3,6 +3,7 @@ using AppAcademia.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AppAcademia.ViewModels;
+using AppAcademia.Models;
 
 namespace AppAcademia.Controllers;
 
@@ -43,7 +44,7 @@ public class AlunoController : Controller
             .ToList();
 
         var concluidosHoje = _context.ExerciciosConcluidos
-            .Where(c => c.Data.Date == DateTime.Today)
+            .Where(c => c.DataConclusao.Date == DateTime.Today)
             .Select(c => c.ExercicioId)
             .ToList();
 
@@ -56,14 +57,14 @@ public class AlunoController : Controller
     public IActionResult ConcluirExercicio(int exercicioId)
     {
         var existe = _context.ExerciciosConcluidos
-            .Any(c => c.ExercicioId == exercicioId && c.Data.Date == DateTime.Today);
+            .Any(c => c.ExercicioId == exercicioId && c.DataConclusao.Date == DateTime.Today);
 
         if (!existe)
         {
             _context.ExerciciosConcluidos.Add(new()
             {
                 ExercicioId = exercicioId,
-                Data = DateTime.Now
+                DataConclusao = DateTime.Now
             });
 
             _context.SaveChanges();
@@ -81,55 +82,32 @@ public class AlunoController : Controller
             .Select(a => a.Id)
             .First();
 
-        var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
-        var fimSemana = inicioSemana.AddDays(6);
+        var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+        var fimSemana = inicioSemana.AddDays(7);
 
-        var treinos = _context.Treinos
-            .Include(t => t.Exercicios)
-            .Where(t => t.AlunoId == alunoId)
+        var historico = _context.ExerciciosConcluidos
+            .Include(c => c.Exercicio!)
+                .ThenInclude(e => e.Treino!)
+            .Where(c =>
+                c.Exercicio != null &&
+                c.Exercicio.Treino != null &&
+                c.Exercicio.Treino.AlunoId == alunoId &&
+                c.DataConclusao >= inicioSemana &&
+                c.DataConclusao < fimSemana
+            )
+            .GroupBy(c => c.DataConclusao.Date)
+            .Select(g => new HistoricoSemanalViewModel
+            {
+                Data = g.Key,
+                TotalExercicios = g.Count()
+            })
+            .OrderBy(h => h.Data)
             .ToList();
 
-        var concluidosSemana = _context.ExerciciosConcluidos
-            .Where(c => c.Data.Date >= inicioSemana && c.Data.Date <= fimSemana)
-            .ToList();
+        ViewBag.InicioSemana = inicioSemana;
+        ViewBag.FimSemana = fimSemana.AddDays(-1);
 
-        ViewBag.ConcluidosSemana = concluidosSemana;
-
-        return View(treinos);
-    }
-
-    public IActionResult Desempenho()
-    {
-        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-
-        var alunoId = _context.Alunos
-            .Where(a => a.UsuarioId == usuarioId)
-            .Select(a => a.Id)
-            .First();
-
-        var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
-
-        var dias = new[] { "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo" };
-
-        var dados = new DesempenhoSemanalViewModel();
-
-        foreach (var dia in dias)
-        {
-            var dataDia = inicioSemana.AddDays(Array.IndexOf(dias, dia));
-
-            var total = _context.ExerciciosConcluidos
-                .Include(c => c.Exercicio)
-                .ThenInclude(e => e!.Treino)
-                .Count(c =>
-                    c.Data.Date == dataDia.Date &&
-                    c.Exercicio!.Treino!.AlunoId == alunoId
-                );
-
-            dados.Dias.Add(dia);
-            dados.Quantidades.Add(total);
-        }
-
-        return View(dados);
+        return View(historico);
     }
 
 }

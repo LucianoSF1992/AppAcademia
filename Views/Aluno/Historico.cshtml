@@ -1,35 +1,46 @@
-@model List<AppAcademia.Models.Treino>
+@model List<AppAcademia.ViewModels.HistoricoSemanalViewModel>
 
 @{
-    var concluidos = ViewBag.ConcluidosSemana as List<AppAcademia.Models.ExercicioConcluido>
-    ?? new List<AppAcademia.Models.ExercicioConcluido>();
+    ViewData["Title"] = "Histórico Semanal";
 }
 
-<h2>📅 Histórico da Semana</h2>
+<h2 class="mb-3">📅 Histórico Semanal</h2>
 
-@foreach (var treino in Model)
+<p class="text-muted">
+    Semana:
+    <strong>
+        @ViewBag.InicioSemana.ToString("dd/MM/yyyy")
+        a
+        @ViewBag.FimSemana.ToString("dd/MM/yyyy")
+    </strong>
+</p>
+
+@if (!Model.Any())
 {
-    var exercicios = treino.Exercicios;
-    var feitos = exercicios.Count(e => concluidos.Any(c => c.ExercicioId == e.Id));
-
-    <div class="card mb-3">
-        <div class="card-header">
-            <strong>@treino.DiaSemana</strong>
-        </div>
-
-        <div class="card-body">
-            <p>
-                @feitos de @exercicios.Count exercícios concluídos
-            </p>
-
-            @if (feitos == exercicios.Count && exercicios.Count > 0)
-            {
-                <span class="badge bg-success">Treino completo 💪</span>
-            }
-            else
-            {
-                <span class="badge bg-warning text-dark">Pendente</span>
-            }
-        </div>
+    <div class="alert alert-info mt-4">
+        Nenhum exercício concluído nesta semana.
     </div>
 }
+else
+{
+    <div class="list-group mt-4">
+        @foreach (var item in Model)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>
+                        📅 @item.Data.ToString("dddd, dd/MM")
+                    </strong>
+                </div>
+
+                <span class="badge bg-success">
+                    💪 @item.TotalExercicios exercícios
+                </span>
+            </div>
+        }
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-4">
+    ⬅️ Voltar
+</a>

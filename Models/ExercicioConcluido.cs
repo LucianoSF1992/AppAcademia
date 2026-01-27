@@ -6,6 +6,5 @@ public class ExercicioConcluido
 
     public int ExercicioId { get; set; }
     public Exercicio? Exercicio { get; set; }
-
-    public DateTime Data { get; set; }
+    public DateTime DataConclusao { get; set; } = DateTime.Now;
 }
