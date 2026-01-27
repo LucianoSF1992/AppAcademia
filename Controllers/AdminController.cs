@@ -14,6 +14,12 @@ public class AdminController : Controller
         _context = context;
     }
 
+    public IActionResult Index()
+    {
+        return RedirectToAction("Dashboard");
+    }
+
+
     public IActionResult Dashboard()
     {
         var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
