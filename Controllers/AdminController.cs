@@ -10,4 +10,26 @@ public class AdminController : Controller
     {
         return View();
     }
+
+    public IActionResult Dashboard()
+    {
+        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+        var perfil = HttpContext.Session.GetString("Perfil");
+
+        if (usuarioId == null || perfil != "Admin")
+            return RedirectToAction("Login", "Auth");
+
+        var totalInstrutores = _context.Instrutores.Count();
+        var totalAlunos = _context.Alunos.Count();
+        var totalTreinos = _context.Treinos.Count(t => t.Ativo);
+        var totalExercicios = _context.Exercicios.Count();
+
+        ViewBag.TotalInstrutores = totalInstrutores;
+        ViewBag.TotalAlunos = totalAlunos;
+        ViewBag.TotalTreinos = totalTreinos;
+        ViewBag.TotalExercicios = totalExercicios;
+
+        return View();
+    }
+
 }
