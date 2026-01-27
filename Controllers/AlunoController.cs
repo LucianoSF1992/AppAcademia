@@ -55,6 +55,60 @@ namespace AppAcademia.Controllers
             return View(treinos);
         }
 
+        public IActionResult Dashboard()
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Auth");
+
+            var alunoId = _context.Alunos
+                .Where(a => a.UsuarioId == usuarioId)
+                .Select(a => a.Id)
+                .First();
+
+            var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            var fimSemana = inicioSemana.AddDays(7);
+
+            // Total planejado na semana
+            var totalPlanejado = _context.Treinos
+                .Where(t => t.AlunoId == alunoId && t.Ativo)
+                .SelectMany(t => t.Exercicios)
+                .Count();
+
+            // Total concluído na semana
+            var totalConcluido = _context.ExerciciosConcluidos
+                .Where(c =>
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.AlunoId == alunoId &&
+                    c.DataConclusao >= inicioSemana &&
+                    c.DataConclusao < fimSemana
+                )
+                .Count();
+
+            // Concluído hoje
+            var feitoHoje = _context.ExerciciosConcluidos
+                .Where(c =>
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.AlunoId == alunoId &&
+                    c.DataConclusao.Date == DateTime.Today
+                )
+                .Count();
+
+            var percentual = totalPlanejado == 0
+                ? 0
+                : (int)Math.Round((double)totalConcluido / totalPlanejado * 100);
+
+            ViewBag.TotalPlanejado = totalPlanejado;
+            ViewBag.TotalConcluido = totalConcluido;
+            ViewBag.FeitoHoje = feitoHoje;
+            ViewBag.Percentual = percentual;
+
+            return View();
+        }
+
+
         // ===============================
         // MARCAR EXERCÍCIO COMO CONCLUÍDO
         // ===============================

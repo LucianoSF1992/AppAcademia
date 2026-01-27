@@ -95,6 +95,12 @@
                         @if (Context.Session.GetString("Perfil") == "Aluno")
                         {
                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="Aluno" asp-action="Dashboard">
+                                    🏠 Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a class="nav-link @(controllerAtual == "Aluno" ? "active" : "")" asp-controller="Aluno"
                                     asp-action="Index">
                                     Meu Treino

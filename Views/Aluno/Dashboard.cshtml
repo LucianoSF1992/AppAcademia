@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Dashboard do Aluno";
+}
+
+<div class="container mt-4">
+
+    <h2>🏠 Dashboard</h2>
+    <p class="text-muted">Resumo da sua semana de treino</p>
+
+    <!-- PROGRESSO -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">📊 Progresso Semanal</h5>
+
+            <div class="progress mb-2" style="height: 25px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: @ViewBag.Percentual%;"
+                    aria-valuenow="@ViewBag.Percentual" aria-valuemin="0" aria-valuemax="100">
+                    @ViewBag.Percentual%
+                </div>
+            </div>
+
+            <p class="mb-0">
+                @ViewBag.TotalConcluido de @ViewBag.TotalPlanejado exercícios concluídos
+            </p>
+        </div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="row">
+
+        <div class="col-md-4">
+            <div class="card text-center mb-3">
+                <div class="card-body">
+                    <h6>💪 Exercícios Hoje</h6>
+                    <h3>@ViewBag.FeitoHoje</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center mb-3">
+                <div class="card-body">
+                    <h6>📋 Total da Semana</h6>
+                    <h3>@ViewBag.TotalPlanejado</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center mb-3">
+                <div class="card-body">
+                    <h6>🔥 Faltam</h6>
+                    <h3>@(ViewBag.TotalPlanejado - ViewBag.TotalConcluido)</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AÇÕES -->
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-primary me-2">
+            🏋️ Treino de Hoje
+        </a>
+
+        <a asp-action="Historico" class="btn btn-secondary">
+            📅 Histórico
+        </a>
+    </div>
+
+</div>
