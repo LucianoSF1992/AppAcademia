@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using AppAcademia.Filters;
+using AppAcademia.Data;
 
 namespace AppAcademia.Controllers;
 
 [ServiceFilter(typeof(AdminOnlyAttribute))]
 public class AdminController : Controller
 {
-    public IActionResult Index()
+    private readonly AppDbContext _context;
+
+    public AdminController(AppDbContext context)
     {
-        return View();
+        _context = context;
     }
 
     public IActionResult Dashboard()
@@ -31,5 +34,5 @@ public class AdminController : Controller
 
         return View();
     }
-
 }
+
