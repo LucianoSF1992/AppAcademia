@@ -222,5 +222,60 @@ namespace AppAcademia.Controllers
             // ✅ AGORA EXISTE
             return View(historico);
         }
+        public IActionResult Desempenho()
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Auth");
+
+            var alunoId = _context.Alunos
+                .Where(a => a.UsuarioId == usuarioId)
+                .Select(a => a.Id)
+                .First();
+
+            var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            var fimSemana = inicioSemana.AddDays(7);
+
+            // Exercícios concluídos na semana
+            var exerciciosSemana = _context.ExerciciosConcluidos
+                .Where(c =>
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.AlunoId == alunoId &&
+                    c.DataConclusao >= inicioSemana &&
+                    c.DataConclusao < fimSemana
+                )
+                .ToList();
+
+            var totalConcluido = exerciciosSemana.Count;
+
+            // Dias únicos treinados
+            var diasTreinados = exerciciosSemana
+                .Select(c => c.DataConclusao.Date)
+                .Distinct()
+                .Count();
+
+            // Total planejado
+            var totalPlanejado = _context.Treinos
+                .Where(t => t.AlunoId == alunoId && t.Ativo)
+                .SelectMany(t => t.Exercicios)
+                .Count();
+
+            var percentual = totalPlanejado == 0
+                ? 0
+                : (int)Math.Round((double)totalConcluido / totalPlanejado * 100);
+
+            var mediaPorDia = diasTreinados == 0
+                ? 0
+                : Math.Round((double)totalConcluido / diasTreinados, 1);
+
+            ViewBag.Percentual = percentual;
+            ViewBag.TotalConcluido = totalConcluido;
+            ViewBag.TotalPlanejado = totalPlanejado;
+            ViewBag.DiasTreinados = diasTreinados;
+            ViewBag.MediaPorDia = mediaPorDia;
+
+            return View();
+        }
     }
 }

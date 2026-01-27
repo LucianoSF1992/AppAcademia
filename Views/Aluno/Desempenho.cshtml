@@ -1,35 +1,89 @@
-@model AppAcademia.ViewModels.DesempenhoSemanalViewModel
-
-<h2>📊 Meu Desempenho Semanal</h2>
-
-<canvas id="graficoSemanal" height="120"></canvas>
-
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        const ctx = document.getElementById('graficoSemanal');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dias)),
-                datasets: [{
-                    label: 'Exercícios concluídos',
-                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Quantidades)),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
-                }
-            }
-        });
-    </script>
+@{
+    ViewData["Title"] = "Desempenho do Aluno";
 }
+
+<div class="container mt-4">
+
+    <h2>📈 Desempenho</h2>
+    <p class="text-muted">Análise da sua semana de treinos</p>
+
+    <!-- PROGRESSO -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>📊 Progresso Semanal</h5>
+
+            <div class="progress mb-2" style="height: 25px;">
+                <div class="progress-bar bg-success" style="width: @ViewBag.Percentual%;">
+                    @ViewBag.Percentual%
+                </div>
+            </div>
+
+            <p>
+                @ViewBag.TotalConcluido de @ViewBag.TotalPlanejado exercícios concluídos
+            </p>
+        </div>
+    </div>
+
+    <!-- MÉTRICAS -->
+    <div class="row text-center">
+
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6>📆 Dias treinados</h6>
+                    <h3>@ViewBag.DiasTreinados</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6>💪 Exercícios concluídos</h6>
+                    <h3>@ViewBag.TotalConcluido</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6>📊 Média por dia</h6>
+                    <h3>@ViewBag.MediaPorDia</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FEEDBACK -->
+    @if (ViewBag.Percentual == 100)
+    {
+        <div class="alert alert-success mt-4">
+            🏆 Semana perfeita! Excelente desempenho!
+        </div>
+    }
+    else if (ViewBag.Percentual >= 70)
+    {
+        <div class="alert alert-info mt-4">
+            💪 Ótimo desempenho! Continue assim.
+        </div>
+    }
+    else if (ViewBag.Percentual > 0)
+    {
+        <div class="alert alert-warning mt-4">
+            ⚠️ Você pode melhorar essa semana!
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-secondary mt-4">
+            🚀 Vamos começar? Nenhum treino registrado ainda.
+        </div>
+    }
+
+    <a asp-action="Dashboard" class="btn btn-secondary mt-3">
+        ⬅ Voltar ao Dashboard
+    </a>
+
+</div>
