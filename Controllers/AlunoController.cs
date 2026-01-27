@@ -1,113 +1,172 @@
 using AppAcademia.Data;
-using AppAcademia.Filters;
+using AppAcademia.Models;
+using AppAcademia.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AppAcademia.ViewModels;
-using AppAcademia.Models;
 
-namespace AppAcademia.Controllers;
-
-[ServiceFilter(typeof(AlunoOnlyAttribute))]
-public class AlunoController : Controller
+namespace AppAcademia.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public AlunoController(AppDbContext context)
+    public class AlunoController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public IActionResult Index()
-    {
-        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-
-        var alunoId = _context.Alunos
-            .Where(a => a.UsuarioId == usuarioId)
-            .Select(a => a.Id)
-            .First();
-
-        var diaHoje = DateTime.Now.DayOfWeek switch
+        public AlunoController(AppDbContext context)
         {
-            DayOfWeek.Monday => "Segunda",
-            DayOfWeek.Tuesday => "Terça",
-            DayOfWeek.Wednesday => "Quarta",
-            DayOfWeek.Thursday => "Quinta",
-            DayOfWeek.Friday => "Sexta",
-            DayOfWeek.Saturday => "Sábado",
-            _ => "Domingo"
-        };
-
-
-        var treinos = _context.Treinos
-            .Include(t => t.Exercicios)
-            .Where(t => t.AlunoId == alunoId && t.DiaSemana == diaHoje)
-            .ToList();
-
-        var concluidosHoje = _context.ExerciciosConcluidos
-            .Where(c => c.DataConclusao.Date == DateTime.Today)
-            .Select(c => c.ExercicioId)
-            .ToList();
-
-        ViewBag.Concluidos = concluidosHoje;
-
-        return View(treinos);
-    }
-
-    [HttpPost]
-    public IActionResult ConcluirExercicio(int exercicioId)
-    {
-        var existe = _context.ExerciciosConcluidos
-            .Any(c => c.ExercicioId == exercicioId && c.DataConclusao.Date == DateTime.Today);
-
-        if (!existe)
-        {
-            _context.ExerciciosConcluidos.Add(new()
-            {
-                ExercicioId = exercicioId,
-                DataConclusao = DateTime.Now
-            });
-
-            _context.SaveChanges();
+            _context = context;
         }
 
-        return Ok();
-    }
+        // ===============================
+        // DASHBOARD / TREINO DO DIA
+        // ===============================
+        public IActionResult Index()
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Auth");
 
-    public IActionResult Historico()
-    {
-        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            var alunoId = _context.Alunos
+                .Where(a => a.UsuarioId == usuarioId)
+                .Select(a => a.Id)
+                .FirstOrDefault();
 
-        var alunoId = _context.Alunos
-            .Where(a => a.UsuarioId == usuarioId)
-            .Select(a => a.Id)
-            .First();
+            var diaSemana = DateTime.Today.DayOfWeek.ToString();
 
-        var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-        var fimSemana = inicioSemana.AddDays(7);
+            var treinos = _context.Treinos
+                .Include(t => t.Exercicios)
+                .Where(t =>
+                    t.AlunoId == alunoId &&
+                    t.Ativo &&
+                    t.DiaSemana == diaSemana
+                )
+                .ToList();
 
-        var historico = _context.ExerciciosConcluidos
-            .Include(c => c.Exercicio!)
-                .ThenInclude(e => e.Treino!)
-            .Where(c =>
+            var concluidos = _context.ExerciciosConcluidos
+                .Where(c =>
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.AlunoId == alunoId &&
+                    c.DataConclusao.Date == DateTime.Today
+                )
+                .Select(c => c.ExercicioId)
+                .ToList();
+
+            ViewBag.Concluidos = concluidos;
+
+            return View(treinos);
+        }
+
+        // ===============================
+        // MARCAR EXERCÍCIO COMO CONCLUÍDO
+        // ===============================
+        [HttpPost]
+        public IActionResult ConcluirExercicio(int exercicioId)
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Auth");
+
+            var alunoId = _context.Alunos
+                .Where(a => a.UsuarioId == usuarioId)
+                .Select(a => a.Id)
+                .First();
+
+            var jaConcluido = _context.ExerciciosConcluidos.Any(c =>
+                c.ExercicioId == exercicioId &&
                 c.Exercicio != null &&
                 c.Exercicio.Treino != null &&
                 c.Exercicio.Treino.AlunoId == alunoId &&
-                c.DataConclusao >= inicioSemana &&
-                c.DataConclusao < fimSemana
-            )
-            .GroupBy(c => c.DataConclusao.Date)
-            .Select(g => new HistoricoSemanalViewModel
+                c.DataConclusao.Date == DateTime.Today
+            );
+
+            if (!jaConcluido)
             {
-                Data = g.Key,
-                TotalExercicios = g.Count()
-            })
-            .OrderBy(h => h.Data)
-            .ToList();
+                _context.ExerciciosConcluidos.Add(new ExercicioConcluido
+                {
+                    ExercicioId = exercicioId,
+                    DataConclusao = DateTime.Now
+                });
 
-        ViewBag.InicioSemana = inicioSemana;
-        ViewBag.FimSemana = fimSemana.AddDays(-1);
+                _context.SaveChanges();
+            }
 
-        return View(historico);
+            return RedirectToAction("Index");
+        }
+
+        // ===============================
+        // HISTÓRICO SEMANAL + PROGRESSO
+        // ===============================
+        public IActionResult Historico()
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Auth");
+
+            var alunoId = _context.Alunos
+                .Where(a => a.UsuarioId == usuarioId)
+                .Select(a => a.Id)
+                .First();
+
+            var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            var fimSemana = inicioSemana.AddDays(7);
+
+            // ===============================
+            // HISTÓRICO DIÁRIO (AQUI ESTAVA FALTANDO)
+            // ===============================
+            var historico = _context.ExerciciosConcluidos
+                .Include(c => c.Exercicio!)
+                    .ThenInclude(e => e.Treino!)
+                .Where(c =>
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.AlunoId == alunoId &&
+                    c.DataConclusao >= inicioSemana &&
+                    c.DataConclusao < fimSemana
+                )
+                .GroupBy(c => c.DataConclusao.Date)
+                .Select(g => new HistoricoSemanalViewModel
+                {
+                    Data = g.Key,
+                    TotalExercicios = g.Count()
+                })
+                .OrderBy(h => h.Data)
+                .ToList();
+
+            // ===============================
+            // TOTAL PLANEJADO
+            // ===============================
+            var totalPlanejado = _context.Treinos
+                .Where(t =>
+                    t.AlunoId == alunoId &&
+                    t.Ativo
+                )
+                .SelectMany(t => t.Exercicios)
+                .Count();
+
+            // ===============================
+            // TOTAL CONCLUÍDO NA SEMANA
+            // ===============================
+            var totalConcluido = _context.ExerciciosConcluidos
+                .Where(c =>
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.AlunoId == alunoId &&
+                    c.DataConclusao >= inicioSemana &&
+                    c.DataConclusao < fimSemana
+                )
+                .Count();
+
+            var percentual = totalPlanejado == 0
+                ? 0
+                : (int)Math.Round((double)totalConcluido / totalPlanejado * 100);
+
+            ViewBag.InicioSemana = inicioSemana;
+            ViewBag.FimSemana = fimSemana;
+            ViewBag.TotalPlanejado = totalPlanejado;
+            ViewBag.TotalConcluido = totalConcluido;
+            ViewBag.Percentual = percentual;
+
+            // ✅ AGORA EXISTE
+            return View(historico);
+        }
     }
-
 }

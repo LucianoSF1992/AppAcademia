@@ -2,45 +2,108 @@
 
 @{
     ViewData["Title"] = "Histórico Semanal";
+    var inicioSemana = (DateTime)ViewBag.InicioSemana;
+    var fimSemana = (DateTime)ViewBag.FimSemana;
+    int totalPlanejado = ViewBag.TotalPlanejado;
+    int totalConcluido = ViewBag.TotalConcluido;
+    int percentual = ViewBag.Percentual;
 }
 
-<h2 class="mb-3">📅 Histórico Semanal</h2>
+<div class="container mt-4">
 
-<p class="text-muted">
-    Semana:
-    <strong>
-        @ViewBag.InicioSemana.ToString("dd/MM/yyyy")
-        a
-        @ViewBag.FimSemana.ToString("dd/MM/yyyy")
-    </strong>
-</p>
+    <h2>📅 Histórico Semanal</h2>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info mt-4">
-        Nenhum exercício concluído nesta semana.
+    <p class="text-muted">
+        Semana de <strong>@inicioSemana.ToString("dd/MM")</strong>
+        até <strong>@fimSemana.AddDays(-1).ToString("dd/MM")</strong>
+    </p>
+
+    @if (ViewBag.Percentual == 100)
+    {
+        <div class="alert alert-success">
+            🏆 Semana concluída! Excelente trabalho!
+        </div>
+    }
+    else if (ViewBag.Percentual >= 70)
+    {
+        <div class="alert alert-info">
+            💪 Ótimo ritmo! Continue assim.
+        </div>
+    }
+    else if (ViewBag.Percentual > 0)
+    {
+        <div class="alert alert-warning">
+            ⚠️ Ainda dá tempo de evoluir essa semana!
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-secondary">
+            🚀 Vamos começar? Seu progresso ainda está zerado.
+        </div>
+    }
+
+    <hr />
+
+    <!-- ========================= -->
+    <!-- PROGRESSO SEMANAL -->
+    <!-- ========================= -->
+    <h5>📊 Progresso da Semana</h5>
+
+    <div class="progress mb-3" style="height: 28px;">
+        <div class="progress-bar bg-success" role="progressbar" style="width: @percentual%;" aria-valuenow="@percentual"
+            aria-valuemin="0" aria-valuemax="100">
+            @percentual%
+        </div>
     </div>
-}
-else
-{
-    <div class="list-group mt-4">
-        @foreach (var item in Model)
-        {
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>
-                        📅 @item.Data.ToString("dddd, dd/MM")
-                    </strong>
-                </div>
 
-                <span class="badge bg-success">
-                    💪 @item.TotalExercicios exercícios
-                </span>
-            </div>
-        }
-    </div>
-}
+    <p>
+        <strong>@totalConcluido</strong> de
+        <strong>@totalPlanejado</strong> exercícios concluídos
+    </p>
 
-<a asp-action="Index" class="btn btn-secondary mt-4">
-    ⬅️ Voltar
-</a>
+    <hr />
+
+    <!-- ========================= -->
+    <!-- HISTÓRICO DIÁRIO -->
+    <!-- ========================= -->
+    <h5>📆 Exercícios por dia</h5>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Nenhum exercício foi concluído nesta semana.
+        </div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Exercícios Concluídos</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dia in Model)
+                {
+                    <tr>
+                        <td>@dia.Data.ToString("dd/MM/yyyy")</td>
+                        <td>@dia.TotalExercicios</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Concluído
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">
+        ⬅ Voltar
+    </a>
+
+</div>
