@@ -37,45 +37,32 @@ namespace AppAcademia.Controllers
                     t.Aluno != null &&
                     t.Aluno.InstrutorId == instrutorId &&
                     t.Ativo
-    )
-    .Count();
-
-
+                )
+                .Count();
 
             // Exercícios cadastrados
             var totalExercicios = _context.Exercicios
-                .Include(e => e.Treino)
-                .ThenInclude(t => t.Aluno)
                 .Where(e =>
                     e.Treino != null &&
                     e.Treino.Aluno != null &&
                     e.Treino.Aluno.InstrutorId == instrutorId
-                                                                                                                                                                                                                                                    )
-    .Count();
-
-
-
+                )
+                .Count();
 
             // Treinos iniciados na semana
             var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
             var fimSemana = inicioSemana.AddDays(7);
 
             var treinosIniciadosSemana = _context.ExerciciosConcluidos
-                .Include(c => c.Exercicio)
-                .ThenInclude(e => e.Treino)
-                .ThenInclude(t => t.Aluno)
-    .Where(c =>
-        c.Exercicio != null &&
-        c.Exercicio.Treino != null &&
-        c.Exercicio.Treino.Aluno != null &&
-        c.Exercicio.Treino.Aluno.InstrutorId == instrutorId &&
-        c.DataConclusao >= inicioSemana &&
-        c.DataConclusao < fimSemana
-    )
-    .Count();
-
-    );
-
+                .Where(c =>
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.Aluno != null &&
+                    c.Exercicio.Treino.Aluno.InstrutorId == instrutorId &&
+                    c.DataConclusao >= inicioSemana &&
+                    c.DataConclusao < fimSemana
+                )
+                .Count();
 
             ViewBag.TotalAlunos = totalAlunos;
             ViewBag.TotalTreinos = totalTreinos;
