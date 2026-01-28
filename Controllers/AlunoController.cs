@@ -3,9 +3,14 @@ using AppAcademia.Models;
 using AppAcademia.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using AppAcademia.Filters;
+
 
 namespace AppAcademia.Controllers
 {
+    [AuthorizeSession]
+    [Authorize(Roles = "Aluno")]
     public class AlunoController : Controller
     {
         private readonly AppDbContext _context;

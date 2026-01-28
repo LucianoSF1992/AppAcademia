@@ -1,9 +1,14 @@
 using AppAcademia.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using AppAcademia.Filters;
+
 
 namespace AppAcademia.Controllers
 {
+    [AuthorizeSession]
+    [Authorize(Roles = "Instrutor")]
     public class InstrutorController : Controller
     {
         private readonly AppDbContext _context;

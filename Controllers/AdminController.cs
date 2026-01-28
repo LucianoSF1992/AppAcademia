@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using AppAcademia.Filters;
 using AppAcademia.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppAcademia.Controllers;
 
 [ServiceFilter(typeof(AdminOnlyAttribute))]
+
+[AuthorizeSession]
+[Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
     private readonly AppDbContext _context;
