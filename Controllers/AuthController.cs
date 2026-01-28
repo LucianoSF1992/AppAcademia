@@ -37,7 +37,7 @@ public class AuthController : Controller
         return usuario.Perfil switch
         {
             "Admin" => RedirectToAction("Index", "Admin"),
-            "Instrutor" => RedirectToAction("Index", "Instrutor"),
+            "Instrutor" => RedirectToAction("Dashboard", "Instrutor"),
             "Aluno" => RedirectToAction("Index", "Aluno"),
             _ => RedirectToAction("Login")
         };
