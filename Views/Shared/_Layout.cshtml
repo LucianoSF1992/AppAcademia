@@ -74,10 +74,11 @@
                         @if (Context.Session.GetString("Perfil") == "Instrutor")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Instrutor" asp-action="Index">
+                                <a class="nav-link" asp-controller="Instrutor" asp-action="Dashboard">
                                     Dashboard
                                 </a>
                             </li>
+
 
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="AlunoInstrutor" asp-action="Index">
@@ -144,9 +145,13 @@
         @RenderBody()
     </main>
 
-    <footer class="bg-light text-center text-muted py-3 mt-auto border-top">
-        © 2026 - AppAcademia
+    <footer class="bg-light text-center text-muted small py-3 mt-auto border-top">
+        © 2026 - AppAcademia · Desenvolvido por
+        <a href="" target="_blank" class="text-decoration-none">
+            Luciano Silva Ferreira
+        </a>
     </footer>
+
 
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

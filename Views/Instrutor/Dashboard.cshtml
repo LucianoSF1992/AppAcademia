@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Dashboard do Instrutor";
+}
+
+<div class="container mt-4">
+    <h2>📊 Dashboard do Instrutor</h2>
+    <p class="text-muted">Visão geral dos seus alunos e treinos</p>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>👥 Alunos</h6>
+                    <h2>@ViewBag.TotalAlunos</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>🏋️ Treinos Ativos</h6>
+                    <h2>@ViewBag.TotalTreinos</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>📋 Exercícios</h6>
+                    <h2>@ViewBag.TotalExercicios</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>🔥 Treinos iniciados (semana)</h6>
+                    <h2>@ViewBag.TreinosIniciadosSemana</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <h5>⚡ Ações rápidas</h5>
+
+    <div class="d-flex gap-2 mt-2">
+        <a asp-controller="AlunoInstrutor" asp-action="Index" class="btn btn-primary">
+            👥 Gerenciar Alunos
+        </a>
+
+        <a asp-controller="TreinoInstrutor" asp-action="Index" class="btn btn-success">
+            🏋️ Gerenciar Treinos
+        </a>
+    </div>
+</div>

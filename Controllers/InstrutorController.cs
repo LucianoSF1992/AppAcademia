@@ -1,13 +1,60 @@
+using AppAcademia.Data;
 using Microsoft.AspNetCore.Mvc;
-using AppAcademia.Filters;
+using Microsoft.EntityFrameworkCore;
 
-namespace AppAcademia.Controllers;
-
-[ServiceFilter(typeof(InstrutorOnlyAttribute))]
-public class InstrutorController : Controller
+namespace AppAcademia.Controllers
 {
-    public IActionResult Index()
+    public class InstrutorController : Controller
     {
-        return View();
+        private readonly AppDbContext _context;
+
+        public InstrutorController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Dashboard()
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            var perfil = HttpContext.Session.GetString("Perfil");
+
+            if (usuarioId == null || perfil != "Instrutor")
+                return RedirectToAction("Login", "Auth");
+
+            var instrutorId = _context.Instrutores
+                .Where(i => i.UsuarioId == usuarioId)
+                .Select(i => i.Id)
+                .FirstOrDefault();
+
+            // Alunos do instrutor
+            var totalAlunos = _context.Alunos
+                .Count(a => a.InstrutorId == instrutorId);
+
+            // Treinos ativos
+            var totalTreinos = _context.Treinos
+                .Count(t => t.InstrutorId == instrutorId && t.Ativo);
+
+            // Exercícios cadastrados
+            var totalExercicios = _context.Exercicios
+                .Count(e => e.Treino.InstrutorId == instrutorId);
+
+            // Treinos iniciados na semana
+            var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            var fimSemana = inicioSemana.AddDays(7);
+
+            var treinosIniciadosSemana = _context.ExerciciosConcluidos
+                .Count(c =>
+                    c.Exercicio.Treino.InstrutorId == instrutorId &&
+                    c.DataConclusao >= inicioSemana &&
+                    c.DataConclusao < fimSemana
+                );
+
+            ViewBag.TotalAlunos = totalAlunos;
+            ViewBag.TotalTreinos = totalTreinos;
+            ViewBag.TotalExercicios = totalExercicios;
+            ViewBag.TreinosIniciadosSemana = treinosIniciadosSemana;
+
+            return View();
+        }
     }
 }
