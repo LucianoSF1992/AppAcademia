@@ -4,11 +4,7 @@ using AppAcademia.Data;
 using Microsoft.AspNetCore.Authorization;
 
 namespace AppAcademia.Controllers;
-
-[ServiceFilter(typeof(AdminOnlyAttribute))]
-
-[AuthorizeSession]
-[Authorize(Roles = "Admin")]
+[AuthorizeSession("Admin")]
 public class AdminController : Controller
 {
     private readonly AppDbContext _context;

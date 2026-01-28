@@ -42,17 +42,12 @@ namespace AppAcademia.Controllers
                 return View();
             }
 
-            // ===============================
-            // GERAR JWT
-            // ===============================
-            var token = GerarToken(usuario);
 
             // ===============================
             // SESSION (opcional – útil para MVC)
             // ===============================
             HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
             HttpContext.Session.SetString("Perfil", usuario.Perfil);
-            HttpContext.Session.SetString("JwtToken", token);
 
             // ===============================
             // REDIRECIONAR POR PERFIL
@@ -73,40 +68,6 @@ namespace AppAcademia.Controllers
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
-        }
-
-        // ===============================
-        // MÉTODO PRIVADO → GERAR TOKEN JWT
-        // ===============================
-        private string GerarToken(Usuario usuario)
-        {
-            var jwtSettings = _configuration.GetSection("Jwt");
-
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings["Key"])
-            );
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Role, usuario.Perfil)
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(
-                    Convert.ToDouble(jwtSettings["ExpireMinutes"])
-                ),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademia.Controllers;
 
-[ServiceFilter(typeof(InstrutorOnlyAttribute))]
 public class TreinoInstrutorController : Controller
 {
     private readonly AppDbContext _context;

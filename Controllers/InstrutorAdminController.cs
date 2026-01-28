@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademia.Controllers;
 
-[ServiceFilter(typeof(AdminOnlyAttribute))]
+[AuthorizeSession("Admin")]
 public class InstrutorAdminController : Controller
 {
     private readonly AppDbContext _context;

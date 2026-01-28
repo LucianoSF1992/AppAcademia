@@ -1,24 +1,17 @@
 using AppAcademia.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// ===============================
-// BANCO DE DADOS
-// ===============================
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
-);
 
 // ===============================
 // MVC
 // ===============================
 builder.Services.AddControllersWithViews();
+
+// ===============================
+// CACHE (obrigatório para Session)
+// ===============================
+builder.Services.AddDistributedMemoryCache();
 
 // ===============================
 // SESSION
@@ -31,59 +24,21 @@ builder.Services.AddSession(options =>
 });
 
 // ===============================
-// JWT AUTHENTICATION
+// BANCO DE DADOS
 // ===============================
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-
-var secretKey = jwtSettings.GetValue<string>("Key");
-var issuer = jwtSettings.GetValue<string>("Issuer");
-var audience = jwtSettings.GetValue<string>("Audience");
-
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-
-builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.RequireHttpsMetadata = false; // true em produção
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-
-            ValidIssuer = issuer,
-            ValidAudience = audience,
-            IssuerSigningKey = key,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
 
 // ===============================
-// AUTHORIZATION (ROLES)
+// BUILD APP
 // ===============================
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("Admin", policy =>
-        policy.RequireRole("Admin"));
-
-    options.AddPolicy("Instrutor", policy =>
-        policy.RequireRole("Instrutor"));
-
-    options.AddPolicy("Aluno", policy =>
-        policy.RequireRole("Aluno"));
-});
-
 var app = builder.Build();
 
 // ===============================
-// MIDDLEWARE PIPELINE
+// PIPELINE
 // ===============================
 if (!app.Environment.IsDevelopment())
 {
@@ -96,9 +51,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ⚠️ ORDEM IMPORTANTE
+// 🔐 SESSION precisa vir aqui
 app.UseSession();
-app.UseAuthentication();
+
+// ❗ NÃO usar UseAuthentication
 app.UseAuthorization();
 
 // ===============================

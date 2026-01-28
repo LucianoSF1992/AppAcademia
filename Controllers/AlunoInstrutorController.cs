@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademia.Controllers;
-
-[ServiceFilter(typeof(InstrutorOnlyAttribute))]
+[AuthorizeSession("Instrutor")]
 public class AlunoInstrutorController : Controller
 {
     private readonly AppDbContext _context;

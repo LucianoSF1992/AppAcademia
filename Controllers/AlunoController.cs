@@ -9,8 +9,7 @@ using AppAcademia.Filters;
 
 namespace AppAcademia.Controllers
 {
-    [AuthorizeSession]
-    [Authorize(Roles = "Aluno")]
+    [AuthorizeSession("Aluno")]
     public class AlunoController : Controller
     {
         private readonly AppDbContext _context;

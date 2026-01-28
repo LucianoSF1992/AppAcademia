@@ -7,8 +7,7 @@ using AppAcademia.Filters;
 
 namespace AppAcademia.Controllers
 {
-    [AuthorizeSession]
-    [Authorize(Roles = "Instrutor")]
+    [AuthorizeSession("Instrutor")]
     public class InstrutorController : Controller
     {
         private readonly AppDbContext _context;
