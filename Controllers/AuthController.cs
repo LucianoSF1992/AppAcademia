@@ -1,5 +1,6 @@
 using AppAcademia.Data;
 using Microsoft.AspNetCore.Mvc;
+using AppAcademia.Helpers;
 
 namespace AppAcademia.Controllers;
 
@@ -22,21 +23,21 @@ public class AuthController : Controller
     public IActionResult Login(string email, string senha)
     {
         var usuario = _context.Usuarios
-            .FirstOrDefault(u => u.Email == email && u.Senha == senha);
+            .FirstOrDefault(u => u.Email == email);
 
-        if (usuario == null)
+        if (usuario == null || !PasswordHelper.Verificar(senha, usuario.Senha))
         {
-            ViewBag.Erro = "E-mail ou senha inválidos";
+            ViewBag.Erro = "Email ou senha inválidos";
             return View();
         }
 
         HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
-        HttpContext.Session.SetString("Perfil", usuario.Perfil);
         HttpContext.Session.SetString("Nome", usuario.Nome);
+        HttpContext.Session.SetString("Perfil", usuario.Perfil);
 
         return usuario.Perfil switch
         {
-            "Admin" => RedirectToAction("Index", "Admin"),
+            "Admin" => RedirectToAction("Dashboard", "Admin"),
             "Instrutor" => RedirectToAction("Dashboard", "Instrutor"),
             "Aluno" => RedirectToAction("Index", "Aluno"),
             _ => RedirectToAction("Login")
