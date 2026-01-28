@@ -32,22 +32,32 @@ namespace AppAcademia.Controllers
 
             // Treinos ativos
             var totalTreinos = _context.Treinos
-                .Count(t => t.InstrutorId == instrutorId && t.Ativo);
+                .Include(t => t.Aluno)
+                .Count(t => t.Aluno.InstrutorId == instrutorId && t.Ativo);
 
             // Exercícios cadastrados
             var totalExercicios = _context.Exercicios
-                .Count(e => e.Treino.InstrutorId == instrutorId);
+                .Include(e => e.Treino)
+                .ThenInclude(t => t.Aluno)
+                .Count(e => e.Treino.Aluno.InstrutorId == instrutorId);
+
 
             // Treinos iniciados na semana
             var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
             var fimSemana = inicioSemana.AddDays(7);
 
             var treinosIniciadosSemana = _context.ExerciciosConcluidos
+                .Include(c => c.Exercicio)
+                .ThenInclude(e => e.Treino)
+                .ThenInclude(t => t.Aluno)
                 .Count(c =>
-                    c.Exercicio.Treino.InstrutorId == instrutorId &&
+                    c.Exercicio != null &&
+                    c.Exercicio.Treino != null &&
+                    c.Exercicio.Treino.Aluno != null &&
+                    c.Exercicio.Treino.Aluno.InstrutorId == instrutorId &&
                     c.DataConclusao >= inicioSemana &&
                     c.DataConclusao < fimSemana
-                );
+);
 
             ViewBag.TotalAlunos = totalAlunos;
             ViewBag.TotalTreinos = totalTreinos;
