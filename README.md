@@ -122,7 +122,9 @@ ________________________________________
 Este projeto é de uso educacional e demonstrativo.
 Sinta-se à vontade para estudar, adaptar e evoluir.
 ________________________________________
+
 ⭐ Considerações Finais
+
 Este projeto demonstra:
 •	Organização de código
 •	Visão de produto
