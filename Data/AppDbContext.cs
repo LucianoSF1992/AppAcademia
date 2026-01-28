@@ -37,7 +37,7 @@ public class AppDbContext : DbContext
         // Aluno -> Instrutor (SEM cascade)
         modelBuilder.Entity<Aluno>()
             .HasOne(a => a.Instrutor)
-            .WithMany()
+            .WithMany(i => i.Alunos)
             .HasForeignKey(a => a.InstrutorId)
             .OnDelete(DeleteBehavior.Restrict);
     }

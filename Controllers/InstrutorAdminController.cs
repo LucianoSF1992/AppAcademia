@@ -102,21 +102,22 @@ public class InstrutorAdminController : Controller
     public IActionResult Delete(int id)
     {
         var instrutor = _context.Instrutores
-            .Include(i => i.Usuario)
+            .Include(i => i.Alunos)
             .FirstOrDefault(i => i.Id == id);
 
         if (instrutor == null)
             return NotFound();
 
-        // 1️⃣ Remove primeiro o Instrutor (filho)
+        if (instrutor.Alunos.Any())
+        {
+            TempData["Erro"] = "Não é possível excluir este instrutor pois existem alunos vinculados a ele.";
+            return RedirectToAction("Index");
+        }
+
         _context.Instrutores.Remove(instrutor);
-
-        // 2️⃣ Depois remove o Usuario (pai)
-        _context.Usuarios.Remove(instrutor.Usuario!);
-
         _context.SaveChanges();
 
-
+        TempData["Sucesso"] = "Instrutor excluído com sucesso.";
         return RedirectToAction("Index");
     }
 }
