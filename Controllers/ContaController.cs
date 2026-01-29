@@ -2,6 +2,8 @@ using AppAcademia.Data;
 using AppAcademia.Helpers;
 using AppAcademia.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using TreineMais.ViewModels;
+
 
 namespace AppAcademia.Controllers
 {
