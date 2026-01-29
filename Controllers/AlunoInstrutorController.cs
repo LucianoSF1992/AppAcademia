@@ -4,6 +4,7 @@ using AppAcademia.Models;
 using AppAcademia.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AppAcademia.Helpers;
 
 namespace AppAcademia.Controllers;
 [AuthorizeSession("Instrutor")]
@@ -53,7 +54,7 @@ public class AlunoInstrutorController : Controller
         {
             Nome = model.Nome,
             Email = model.Email,
-            Senha = model.Senha,
+            Senha = PasswordHelper.Hash(model.Senha),
             Perfil = "Aluno"
         };
 
