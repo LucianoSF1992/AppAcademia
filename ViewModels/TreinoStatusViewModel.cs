@@ -3,7 +3,7 @@ namespace AppAcademia.ViewModels
     public class TreinoStatusViewModel
     {
         public int TreinoId { get; set; }
-        public string DiaSemana { get; set; } = "";
+        public DayOfWeek DiaSemana { get; set; }
 
         public int TotalExercicios { get; set; }
         public int ExerciciosConcluidos { get; set; }
