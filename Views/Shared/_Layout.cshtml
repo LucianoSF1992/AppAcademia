@@ -124,16 +124,18 @@
 
 
                     <!-- Usuário logado -->
-                    @if (Context.Session.GetString("Nome") != null)
+                    @if (Context.Session.GetInt32("UsuarioId") != null)
                     {
-                        <div class="d-flex align-items-center text-white">
+                        <div class="d-flex align-items-center text-white ms-auto">
                             <span class="me-3">
                                 Olá, <strong>@Context.Session.GetString("Nome")</strong>
                             </span>
 
-                            <a asp-controller="Auth" asp-action="Logout" class="btn btn-outline-danger btn-sm">
-                                Sair
-                            </a>
+                            <form asp-controller="Auth" asp-action="Logout" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    🚪 Sair
+                                </button>
+                            </form>
                         </div>
                     }
                 </div>
