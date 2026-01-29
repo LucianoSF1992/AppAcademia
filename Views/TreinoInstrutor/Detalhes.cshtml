@@ -1,3 +1,5 @@
+@using AppAcademia.Helpers
+
 @model List<AppAcademia.ViewModels.TreinoStatusViewModel>
 
 @{
@@ -28,7 +30,8 @@
         @foreach (var treino in Model)
         {
             <tr>
-                <td>@treino.DiaSemana</td>
+                <td>@treino.DiaSemana.ToPtBr()
+                </td>
 
                 <td>
                     @if (treino.ExerciciosConcluidos == treino.TotalExercicios && treino.TotalExercicios > 0)
