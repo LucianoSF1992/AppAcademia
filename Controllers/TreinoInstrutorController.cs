@@ -1,175 +1,122 @@
 using AppAcademia.Data;
-using AppAcademia.Filters;
 using AppAcademia.Models;
 using AppAcademia.ViewModels;
+using AppAcademia.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppAcademia.Controllers;
-
-public class TreinoInstrutorController : Controller
+namespace AppAcademia.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public TreinoInstrutorController(AppDbContext context)
+    [AuthorizeSession("Instrutor")]
+    public class TreinoInstrutorController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public IActionResult Index()
-    {
-        var instrutorId = _context.Instrutores
-            .Where(i => i.UsuarioId == HttpContext.Session.GetInt32("UsuarioId"))
-            .Select(i => i.Id)
-            .First();
-
-        var alunos = _context.Alunos
-            .Include(a => a.Usuario)
-            .Where(a => a.InstrutorId == instrutorId)
-            .ToList();
-
-        return View(alunos);
-    }
-
-    public IActionResult Create(int alunoId)
-    {
-        var vm = new TreinoViewModel
+        public TreinoInstrutorController(AppDbContext context)
         {
-            AlunoId = alunoId
-        };
+            _context = context;
+        }
 
-        return View(vm);
-    }
-
-    [HttpPost]
-    public IActionResult Create(TreinoViewModel model)
-    {
-        var treino = new Treino
+        // ===============================
+        // LISTAR ALUNOS
+        // ===============================
+        public IActionResult Index()
         {
-            AlunoId = model.AlunoId,
-            DiaSemana = Enum.Parse<DayOfWeek>(model.DiaSemana),
-        };
+            var instrutorId = HttpContext.Session.GetInt32("UsuarioId");
 
-        _context.Treinos.Add(treino);
-        _context.SaveChanges();
-
-        foreach (var ex in model.Exercicios)
-        {
-            var exercicio = new Exercicio
+            if (instrutorId == null)
             {
-                TreinoId = treino.Id,
-                Nome = ex.Nome,
-                GrupoMuscular = ex.GrupoMuscular,
-                Series = ex.Series,
-                Repeticoes = ex.Repeticoes,
-                Descanso = ex.Descanso,
-                Observacoes = ex.Observacoes ?? ""
-            };
+                return RedirectToAction("Login", "Auth");
+            }
 
-            _context.Exercicios.Add(exercicio);
+            var alunos = _context.Alunos
+                .Include(a => a.Usuario)
+                .Include(a => a.Instrutor)
+                .Where(a => a.Instrutor != null &&
+                            a.Instrutor.UsuarioId == instrutorId.Value)
+                .ToList();
+
+
+            return View(alunos);
         }
 
-        _context.SaveChanges();
+        // ===============================
+        // LISTAR TREINOS DO ALUNO
+        // ===============================
+        public IActionResult Detalhes(int alunoId)
+        {
+            var treinos = _context.Treinos
+                .Include(t => t.Exercicios)
+                .Where(t => t.AlunoId == alunoId)
+                .ToList();
 
-        return RedirectToAction("Index");
-    }
-    public IActionResult Detalhes(int alunoId)
-    {
-        var aluno = _context.Alunos
-            .Include(a => a.Usuario)
-            .FirstOrDefault(a => a.Id == alunoId);
+            // Ordenar: Segunda → Domingo
+            var treinosOrdenados = treinos
+                .OrderBy(t => ((int)t.DiaSemana + 6) % 7)
+                .Select(t => new TreinoStatusViewModel
+                {
+                    TreinoId = t.Id,
+                    DiaSemana = t.DiaSemana,
+                    TotalExercicios = t.Exercicios.Count,
+                    ExerciciosConcluidos = t.Exercicios.Count(e =>
+                        _context.ExerciciosConcluidos.Any(c => c.ExercicioId == e.Id)
+                    )
+                })
+                .ToList();
 
-        if (aluno == null)
-            return NotFound();
+            ViewBag.AlunoId = alunoId;
 
-        var treinos = _context.Treinos
-            .Where(t => t.AlunoId == alunoId && t.Ativo)
-            .Select(t => new TreinoStatusViewModel
+            return View(treinosOrdenados);
+        }
+
+        // ===============================
+        // FORMULÁRIO CRIAR TREINO
+        // ===============================
+        public IActionResult Create(int alunoId)
+        {
+            ViewBag.AlunoId = alunoId;
+            return View();
+        }
+
+        // ===============================
+        // SALVAR TREINO
+        // ===============================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Treino treino)
+        {
+            if (!ModelState.IsValid)
             {
-                TreinoId = t.Id,
-                DiaSemana = t.DiaSemana,
-                TotalExercicios = t.Exercicios.Count(),
+                ViewBag.AlunoId = treino.AlunoId;
+                return View(treino);
+            }
 
-                ExerciciosConcluidos = _context.ExerciciosConcluidos
-                .Count(c => c.Exercicio!.TreinoId == t.Id)
-            })
-            .ToList();
+            _context.Treinos.Add(treino);
+            _context.SaveChanges();
 
-
-        ViewBag.Aluno = aluno;
-        return View(treinos);
-    }
-
-    public IActionResult DetalhesTreino(int id)
-    {
-        var treino = _context.Treinos
-            .Include(t => t.Exercicios)
-            .FirstOrDefault(t => t.Id == id);
-
-        if (treino == null)
-            return NotFound();
-
-        return View(treino);
-    }
-
-    public IActionResult Delete(int id)
-    {
-        var treino = _context.Treinos
-            .FirstOrDefault(t => t.Id == id);
-
-        if (treino == null)
-            return NotFound();
-
-        bool jaIniciado = _context.ExerciciosConcluidos
-            .Any(c => c.Exercicio != null && c.Exercicio.TreinoId == treino.Id);
-
-        if (jaIniciado)
-        {
-            TempData["Erro"] = "Este treino não pode ser excluído pois já foi iniciado.";
             return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
         }
 
-        treino.Ativo = false; // SOFT DELETE
-        _context.SaveChanges();
-
-        return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
-    }
-    private bool TreinoJaIniciado(int treinoId)
-    {
-        return _context.ExerciciosConcluidos
-            .Any(c => c.Exercicio!.TreinoId == treinoId);
-    }
-
-    public IActionResult Editar(int id)
-    {
-        var treino = _context.Treinos
-            .Include(t => t.Exercicios)
-            .FirstOrDefault(t => t.Id == id);
-
-        if (treino == null)
-            return NotFound();
-
-        if (TreinoJaIniciado(treino.Id))
+        // ===============================
+        // EXCLUIR TREINO
+        // ===============================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
         {
-            TempData["Erro"] = "Este treino já foi iniciado e não pode ser editado.";
+            var treino = _context.Treinos
+                .Include(t => t.Exercicios)
+                .FirstOrDefault(t => t.Id == id);
+
+            if (treino == null)
+                return NotFound();
+
+            // Remove exercícios primeiro
+            _context.Exercicios.RemoveRange(treino.Exercicios);
+            _context.Treinos.Remove(treino);
+            _context.SaveChanges();
+
             return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
         }
-
-        return View(treino);
-    }
-
-    [HttpPost]
-    public IActionResult Editar(Treino treino)
-    {
-        if (TreinoJaIniciado(treino.Id))
-        {
-            TempData["Erro"] = "Este treino já foi iniciado e não pode ser editado.";
-            return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
-        }
-
-        _context.Treinos.Update(treino);
-        _context.SaveChanges();
-
-        return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
     }
 }

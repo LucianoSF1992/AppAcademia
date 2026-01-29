@@ -26,24 +26,15 @@ namespace AppAcademia.Controllers
         // ===============================
         public IActionResult Index()
         {
-            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Auth");
-
-            var alunoId = _context.Alunos
-                .Where(a => a.UsuarioId == usuarioId)
-                .Select(a => a.Id)
-                .FirstOrDefault();
-
-            var diaSemana = DateTime.Today.DayOfWeek;
+            var alunoId = HttpContext.Session.GetInt32("UsuarioId");
 
             var treinos = _context.Treinos
                 .Include(t => t.Exercicios)
-                .Where(t =>
-                    t.AlunoId == alunoId &&
-                    t.Ativo &&
-                    t.DiaSemana == diaSemana
-                )
+                .Where(t => t.AlunoId == alunoId && t.Ativo)
+                .ToList();
+
+            var treinosOrdenados = treinos
+                .OrderBy(t => ((int)t.DiaSemana + 6) % 7)
                 .ToList();
 
             var concluidos = _context.ExerciciosConcluidos
@@ -53,12 +44,9 @@ namespace AppAcademia.Controllers
                     c.Exercicio.Treino.AlunoId == alunoId &&
                     c.DataConclusao.Date == DateTime.Today
                 )
-                .Select(c => c.ExercicioId)
                 .ToList();
 
-            ViewBag.Concluidos = concluidos;
-
-            return View(treinos);
+            return View(treinosOrdenados);
         }
 
         public IActionResult Dashboard()
