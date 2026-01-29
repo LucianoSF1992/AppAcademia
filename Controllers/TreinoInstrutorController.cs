@@ -87,7 +87,7 @@ public class TreinoInstrutorController : Controller
             .Select(t => new TreinoStatusViewModel
             {
                 TreinoId = t.Id,
-                DiaSemana = t.DiaSemana.ToString(),
+                DiaSemana = t.DiaSemana,
                 TotalExercicios = t.Exercicios.Count(),
 
                 ExerciciosConcluidos = _context.ExerciciosConcluidos
