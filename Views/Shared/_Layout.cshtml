@@ -8,7 +8,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"] - AppAcademia</title>
+    <title>@ViewData["Title"] - Treine+</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Bootstrap CSS -->
@@ -25,25 +25,25 @@
                 @if (Context.Session.GetString("Perfil") == "Admin")
                 {
                     <a class="navbar-brand" asp-controller="Admin" asp-action="Dashboard">
-                        AppAcademia
+                        Treine+
                     </a>
                 }
                 else if (Context.Session.GetString("Perfil") == "Instrutor")
                 {
                     <a class="navbar-brand" asp-controller="Instrutor" asp-action="Dashboard">
-                        AppAcademia
+                        Treine+
                     </a>
                 }
                 else if (Context.Session.GetString("Perfil") == "Aluno")
                 {
                     <a class="navbar-brand" asp-controller="Aluno" asp-action="Index">
-                        AppAcademia
+                        Treine+
                     </a>
                 }
                 else
                 {
                     <a class="navbar-brand" asp-controller="Auth" asp-action="Login">
-                        AppAcademia
+                        Treine+
                     </a>
                 }
 
@@ -148,7 +148,7 @@
     </main>
 
     <footer class="bg-light text-center text-muted small py-3 mt-auto border-top">
-        © 2026 - AppAcademia · Desenvolvido por
+        © 2026 - Treine+ · Desenvolvido por
         <a href="" target="_blank" class="text-decoration-none">
             Luciano Silva Ferreira
         </a>
