@@ -105,6 +105,7 @@ public class InstrutorAdminController : Controller
     public IActionResult Delete(int id)
     {
         var instrutor = _context.Instrutores
+            .Include(i => i.Usuario)
             .Include(i => i.Alunos)
             .FirstOrDefault(i => i.Id == id);
 
@@ -117,10 +118,19 @@ public class InstrutorAdminController : Controller
             return RedirectToAction("Index");
         }
 
+        // 1️⃣ Remove o instrutor
         _context.Instrutores.Remove(instrutor);
+
+        // 2️⃣ Remove o usuário associado
+        if (instrutor.Usuario != null)
+        {
+            _context.Usuarios.Remove(instrutor.Usuario);
+        }
+
         _context.SaveChanges();
 
-        TempData["Sucesso"] = "Instrutor excluído com sucesso.";
+        TempData["Sucesso"] = "Instrutor e usuário excluídos com sucesso.";
         return RedirectToAction("Index");
     }
+
 }
