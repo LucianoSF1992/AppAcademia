@@ -7,15 +7,16 @@
 
     <div class="mb-3">
         <label>Dia da Semana</label>
-        <select asp-for="DiaSemana" class="form-control">
-            <option>Segunda</option>
-            <option>Terça</option>
-            <option>Quarta</option>
-            <option>Quinta</option>
-            <option>Sexta</option>
-            <option>Sábado</option>
-            <option>Domingo</option>
+        <select asp-for="DiaSemana" class="form-select">
+            <option value="Monday">Segunda</option>
+            <option value="Tuesday">Terça</option>
+            <option value="Wednesday">Quarta</option>
+            <option value="Thursday">Quinta</option>
+            <option value="Friday">Sexta</option>
+            <option value="Saturday">Sábado</option>
+            <option value="Sunday">Domingo</option>
         </select>
+
     </div>
 
     <hr />
@@ -47,47 +48,47 @@
             const container = document.getElementById('exercicios-container');
 
             const html = `
-            <div class="card mb-3" id="exercicio-${index}">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <h6>Exercício ${index + 1}</h6>
-                        <button type="button"
-                                class="btn btn-sm btn-danger"
-                                onclick="removerExercicio(${index})">
-                            ❌
-                        </button>
+                <div class="card mb-3" id="exercicio-${index}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h6>Exercício ${index + 1}</h6>
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="removerExercicio(${index})">
+                                ❌
+                            </button>
+                        </div>
+
+                        <input name="Exercicios[${index}].Nome"
+                               class="form-control mb-2"
+                               placeholder="Nome do exercício" required />
+
+                        <input name="Exercicios[${index}].GrupoMuscular"
+                               class="form-control mb-2"
+                               placeholder="Grupo muscular" required />
+
+                        <input name="Exercicios[${index}].Series"
+                               type="number"
+                               class="form-control mb-2"
+                               placeholder="Séries" required />
+
+                        <input name="Exercicios[${index}].Repeticoes"
+                               type="number"
+                               class="form-control mb-2"
+                               placeholder="Repetições" required />
+
+                        <input name="Exercicios[${index}].Descanso"
+                               type="number"
+                               class="form-control mb-2"
+                               placeholder="Descanso (segundos)" required />
+
+                        <textarea name="Exercicios[${index}].Observacoes"
+                                  class="form-control"
+                                  placeholder="Observações (opcional)">
+                        </textarea>
                     </div>
-
-                    <input name="Exercicios[${index}].Nome"
-                           class="form-control mb-2"
-                           placeholder="Nome do exercício" required />
-
-                    <input name="Exercicios[${index}].GrupoMuscular"
-                           class="form-control mb-2"
-                           placeholder="Grupo muscular" required />
-
-                    <input name="Exercicios[${index}].Series"
-                           type="number"
-                           class="form-control mb-2"
-                           placeholder="Séries" required />
-
-                    <input name="Exercicios[${index}].Repeticoes"
-                           type="number"
-                           class="form-control mb-2"
-                           placeholder="Repetições" required />
-
-                    <input name="Exercicios[${index}].Descanso"
-                           type="number"
-                           class="form-control mb-2"
-                           placeholder="Descanso (segundos)" required />
-
-                    <textarea name="Exercicios[${index}].Observacoes"
-                              class="form-control"
-                              placeholder="Observações (opcional)">
-                    </textarea>
                 </div>
-            </div>
-            `;
+                `;
 
             container.insertAdjacentHTML('beforeend', html);
             index++;

@@ -35,7 +35,7 @@ namespace AppAcademia.Controllers
                 .Select(a => a.Id)
                 .FirstOrDefault();
 
-            var diaSemana = DateTime.Today.DayOfWeek.ToString();
+            var diaSemana = DateTime.Today.DayOfWeek;
 
             var treinos = _context.Treinos
                 .Include(t => t.Exercicios)

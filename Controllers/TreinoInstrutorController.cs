@@ -47,7 +47,7 @@ public class TreinoInstrutorController : Controller
         var treino = new Treino
         {
             AlunoId = model.AlunoId,
-            DiaSemana = model.DiaSemana
+            DiaSemana = Enum.Parse<DayOfWeek>(model.DiaSemana),
         };
 
         _context.Treinos.Add(treino);
@@ -87,7 +87,7 @@ public class TreinoInstrutorController : Controller
             .Select(t => new TreinoStatusViewModel
             {
                 TreinoId = t.Id,
-                DiaSemana = t.DiaSemana,
+                DiaSemana = t.DiaSemana.ToString(),
                 TotalExercicios = t.Exercicios.Count(),
 
                 ExerciciosConcluidos = _context.ExerciciosConcluidos
