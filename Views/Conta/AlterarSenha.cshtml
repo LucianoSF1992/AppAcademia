@@ -1,0 +1,35 @@
+@model AppAcademia.ViewModels.AlterarSenhaViewModel
+@{
+    ViewData["Title"] = "Alterar Senha";
+}
+
+<h3>🔒 Alterar senha</h3>
+
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Sucesso"]
+    </div>
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="SenhaAtual"></label>
+        <input asp-for="SenhaAtual" class="form-control" />
+        <span asp-validation-for="SenhaAtual" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NovaSenha"></label>
+        <input asp-for="NovaSenha" class="form-control" />
+        <span asp-validation-for="NovaSenha" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ConfirmarSenha"></label>
+        <input asp-for="ConfirmarSenha" class="form-control" />
+        <span asp-validation-for="ConfirmarSenha" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-warning">Salvar nova senha</button>
+</form>
