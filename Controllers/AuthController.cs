@@ -47,6 +47,7 @@ namespace AppAcademia.Controllers
             // SESSION (opcional – útil para MVC)
             // ===============================
             HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
+            HttpContext.Session.SetString("Nome", usuario.Nome);
             HttpContext.Session.SetString("Perfil", usuario.Perfil);
 
             // ===============================
