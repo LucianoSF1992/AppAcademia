@@ -1,24 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AppAcademia.ViewModels
+namespace TreineMais.ViewModels
 {
     public class AlterarSenhaViewModel
     {
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Senha atual")]
-        public string SenhaAtual { get; set; }
+        public string SenhaAtual { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Password)]
-        [MinLength(6)]
-        [Display(Name = "Nova senha")]
-        public string NovaSenha { get; set; }
+        [MinLength(6, ErrorMessage = "A nova senha deve ter no mínimo 6 caracteres")]
+        public string NovaSenha { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Password)]
         [Compare("NovaSenha", ErrorMessage = "As senhas não conferem")]
-        [Display(Name = "Confirmar nova senha")]
-        public string ConfirmarSenha { get; set; }
+        public string ConfirmarSenha { get; set; } = string.Empty;
     }
 }
