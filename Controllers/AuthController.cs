@@ -66,8 +66,15 @@ namespace AppAcademia.Controllers
         // ===============================
         public IActionResult Logout()
         {
+            // Limpa toda a sessão do usuário
             HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+
+            // Mensagem amigável para o usuário
+            TempData["Mensagem"] = "Você saiu do sistema com segurança.";
+
+            // Redireciona para a tela de login
+            return RedirectToAction("Login", "Auth");
         }
+
     }
 }

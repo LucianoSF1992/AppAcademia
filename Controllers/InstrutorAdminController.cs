@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace AppAcademia.Controllers;
 
 [AuthorizeSession("Admin")]
+
+[NoCache]
 public class InstrutorAdminController : Controller
 {
     private readonly AppDbContext _context;

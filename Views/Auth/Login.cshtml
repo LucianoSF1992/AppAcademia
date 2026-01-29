@@ -11,6 +11,14 @@
             <div class="alert alert-danger">@ViewBag.Erro</div>
         }
 
+        @if (TempData["Mensagem"] != null)
+        {
+            <div class="alert alert-info">
+                @TempData["Mensagem"]
+            </div>
+        }
+
+
         <form method="post">
             <div class="mb-3">
                 <label>E-mail</label>

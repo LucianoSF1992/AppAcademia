@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppAcademia.Controllers;
 [AuthorizeSession("Instrutor")]
+
+[NoCache]
 public class AlunoInstrutorController : Controller
 {
     private readonly AppDbContext _context;

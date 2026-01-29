@@ -10,6 +10,8 @@ using AppAcademia.Filters;
 namespace AppAcademia.Controllers
 {
     [AuthorizeSession("Aluno")]
+
+    [NoCache]
     public class AlunoController : Controller
     {
         private readonly AppDbContext _context;

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AppAcademia.Controllers;
 [AuthorizeSession("Admin")]
+
+[NoCache]
 public class AdminController : Controller
 {
     private readonly AppDbContext _context;

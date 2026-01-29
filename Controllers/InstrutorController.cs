@@ -8,6 +8,8 @@ using AppAcademia.Filters;
 namespace AppAcademia.Controllers
 {
     [AuthorizeSession("Instrutor")]
+
+    [NoCache]
     public class InstrutorController : Controller
     {
         private readonly AppDbContext _context;

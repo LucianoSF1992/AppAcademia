@@ -5,7 +5,7 @@ namespace AppAcademia.Filters
 {
     public class AuthorizeSessionAttribute : ActionFilterAttribute
     {
-        private readonly string? _perfil; // 👈 aqui está a correção
+        private readonly string? _perfil; 
 
         public AuthorizeSessionAttribute(string? perfil = null)
         {
