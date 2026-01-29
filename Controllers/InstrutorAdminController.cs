@@ -43,7 +43,7 @@ public class InstrutorAdminController : Controller
         {
             Nome = model.Nome,
             Email = model.Email,
-            Senha = model.Senha,
+            Senha = PasswordHelper.Hash(model.Senha),
             Perfil = "Instrutor"
         };
 
