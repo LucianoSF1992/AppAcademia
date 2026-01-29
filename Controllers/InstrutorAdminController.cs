@@ -4,6 +4,7 @@ using AppAcademia.Models;
 using AppAcademia.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AppAcademia.Helpers;
 
 namespace AppAcademia.Controllers;
 
