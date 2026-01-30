@@ -3,8 +3,9 @@ namespace AppAcademia.Models;
 public class ExercicioConcluido
 {
     public int Id { get; set; }
-
     public int ExercicioId { get; set; }
+    public int AlunoId { get; set; }
+    public Aluno? Aluno { get; set; }
     public Exercicio? Exercicio { get; set; }
     public DateTime DataConclusao { get; set; } = DateTime.Now;
 }

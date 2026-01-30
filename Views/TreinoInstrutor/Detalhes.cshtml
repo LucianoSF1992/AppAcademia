@@ -1,6 +1,7 @@
 @using AppAcademia.Helpers
+@using TreineMais.ViewModels
+@model List<TreinoStatusViewModel>
 
-@model List<AppAcademia.ViewModels.TreinoStatusViewModel>
 
 @{
     var aluno = ViewBag.Aluno as AppAcademia.Models.Aluno;
@@ -52,6 +53,7 @@
                     <a asp-action="DetalhesTreino" asp-route-id="@treino.TreinoId" class="btn btn-sm btn-primary">
                         Ver
                     </a>
+
 
                     @if (!treino.Concluido && !treino.EmAndamento)
                     {

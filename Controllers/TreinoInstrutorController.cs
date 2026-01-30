@@ -1,11 +1,12 @@
 using AppAcademia.Data;
 using AppAcademia.Models;
-using AppAcademia.ViewModels;
 using AppAcademia.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TreineMais.ViewModels;
 
-namespace AppAcademia.Controllers
+
+namespace TreineMais.Controllers
 {
     [AuthorizeSession("Instrutor")]
     public class TreinoInstrutorController : Controller
@@ -33,7 +34,7 @@ namespace AppAcademia.Controllers
                 .Include(a => a.Usuario)
                 .Include(a => a.Instrutor)
                 .Where(a => a.Instrutor != null &&
-                            a.Instrutor.UsuarioId == instrutorId.Value)
+                            a.Instrutor.UsuarioId == instrutorId)
                 .ToList();
 
 
@@ -50,24 +51,37 @@ namespace AppAcademia.Controllers
                 .Where(t => t.AlunoId == alunoId)
                 .ToList();
 
-            // Ordenar: Segunda → Domingo
-            var treinosOrdenados = treinos
-                .OrderBy(t => ((int)t.DiaSemana + 6) % 7)
+            var model = treinos
                 .Select(t => new TreinoStatusViewModel
                 {
                     TreinoId = t.Id,
                     DiaSemana = t.DiaSemana,
                     TotalExercicios = t.Exercicios.Count,
-                    ExerciciosConcluidos = t.Exercicios.Count(e =>
-                        _context.ExerciciosConcluidos.Any(c => c.ExercicioId == e.Id)
-                    )
+                    ExerciciosConcluidos = _context.ExerciciosConcluidos
+                        .Where(ec => ec.Exercicio != null && ec.Exercicio.TreinoId == t.Id)
+                        .Select(ec => ec.ExercicioId)
+                        .Distinct()
+                        .Count()
                 })
+                .OrderBy(t => ((int)t.DiaSemana + 6) % 7) // segunda → domingo
                 .ToList();
 
-            ViewBag.AlunoId = alunoId;
-
-            return View(treinosOrdenados);
+            return View(model);
         }
+
+        [HttpGet]
+        public IActionResult DetalhesTreino(int id)
+        {
+            var treino = _context.Treinos
+                .Include(t => t.Exercicios)
+                .FirstOrDefault(t => t.Id == id);
+
+            if (treino == null)
+                return NotFound();
+
+            return View(treino);
+        }
+
 
         // ===============================
         // FORMULÁRIO CRIAR TREINO
