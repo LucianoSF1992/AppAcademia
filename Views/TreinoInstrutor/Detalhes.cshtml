@@ -57,15 +57,16 @@
 
                     @if (!treino.Concluido && !treino.EmAndamento)
                     {
-                        <a asp-action="Editar" asp-route-id="@treino.TreinoId" class="btn btn-sm btn-warning">
+                        <a asp-action="Editar" asp-controller="TreinoInstrutor" asp-route-id="@treino.TreinoId"
+                            class="btn btn-sm btn-warning">
                             Editar
                         </a>
                     }
 
                     @if (treino.PodeExcluir)
                     {
-                        <a asp-action="Delete" asp-route-id="@treino.TreinoId" class="btn btn-sm btn-danger"
-                            onclick="return confirm('Deseja realmente excluir este treino?')">
+                        <a asp-action="Delete" asp-controller="TreinoInstrutor" asp-route-id="@treino.TreinoId"
+                            class="btn btn-sm btn-danger">
                             Excluir
                         </a>
                     }

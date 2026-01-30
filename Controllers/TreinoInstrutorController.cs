@@ -111,12 +111,8 @@ namespace TreineMais.Controllers
             return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
         }
 
-        // ===============================
-        // EXCLUIR TREINO
-        // ===============================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        // GET: TreinoInstrutor/Editar/16
+        public IActionResult Editar(int id)
         {
             var treino = _context.Treinos
                 .Include(t => t.Exercicios)
@@ -125,12 +121,40 @@ namespace TreineMais.Controllers
             if (treino == null)
                 return NotFound();
 
-            // Remove exercícios primeiro
+            return View(treino);
+        }
+
+
+        // ===============================
+        // EXCLUIR TREINO
+        // ===============================
+        // GET: TreinoInstrutor/Delete/16
+        public IActionResult Delete(int id)
+        {
+            var treino = _context.Treinos.Find(id);
+
+            if (treino == null)
+                return NotFound();
+
+            return View(treino);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var treino = _context.Treinos
+                .Include(t => t.Exercicios)
+                .FirstOrDefault(t => t.Id == id);
+
+            if (treino == null)
+                return NotFound();
+
             _context.Exercicios.RemoveRange(treino.Exercicios);
             _context.Treinos.Remove(treino);
             _context.SaveChanges();
 
-            return RedirectToAction("Detalhes", new { alunoId = treino.AlunoId });
+            return RedirectToAction(nameof(Index));
         }
     }
 }
